@@ -29,7 +29,7 @@ export function CutScoresSection() {
       {output && (
         <p style={{ ...designStyles.textSmall, ...designStyles.textMuted, margin: '12px 0 0 0' }}>
           위 값은 목표 분포와 문항 정답률로 계산한 NEIS 핵심 분할점수입니다.
-          최소 성취수준(40%) 관련 점검은 아래 별도 섹션에서 참고용으로만 확인하세요.
+          추정 E/미도달 참고값은 아래 알림에서 간단히 확인하세요.
         </p>
       )}
     </DesignSection>
