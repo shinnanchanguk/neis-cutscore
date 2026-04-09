@@ -283,8 +283,70 @@ td, th {
     height: 2px !important;
   }
 
-  /* Tables: horizontal scroll */
-  .design-surface table {
+  /* NEIS table: card layout per difficulty row */
+  [data-neis="table"] {
+    display: block !important;
+    border: none !important;
+  }
+
+  [data-neis="table"] thead {
+    display: none !important;
+  }
+
+  [data-neis="table"] tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  [data-neis="table"] tbody tr {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr !important;
+    gap: 1px !important;
+    border: 1px solid var(--design-border) !important;
+    padding: 0 !important;
+    position: relative !important;
+  }
+
+  [data-neis="table"] tbody td {
+    border: none !important;
+    border-bottom: 1px solid var(--design-border) !important;
+    padding: 8px !important;
+    text-align: center !important;
+    font-size: 12px !important;
+  }
+
+  /* First cell (난이도): span full width as card header */
+  [data-neis="table"] tbody td:nth-child(1) {
+    grid-column: 1 / -1 !important;
+    font-weight: 500 !important;
+    background: var(--design-fg) !important;
+    color: var(--design-bg) !important;
+    text-align: left !important;
+  }
+
+  /* 문항번호, 문항수, 배점합: span full width */
+  [data-neis="table"] tbody td:nth-child(2) {
+    grid-column: 1 / -1 !important;
+    text-align: left !important;
+    font-size: 11px !important;
+    color: var(--design-muted) !important;
+  }
+
+  [data-neis="table"] tbody td:nth-child(3),
+  [data-neis="table"] tbody td:nth-child(4) {
+    display: none !important;
+  }
+
+  /* A~E cells: labeled with ::before */
+  [data-neis="table"] tbody td:nth-child(5)::before { content: 'A '; font-size: 10px; color: var(--design-muted); }
+  [data-neis="table"] tbody td:nth-child(6)::before { content: 'B '; font-size: 10px; color: var(--design-muted); }
+  [data-neis="table"] tbody td:nth-child(7)::before { content: 'C '; font-size: 10px; color: var(--design-muted); }
+  [data-neis="table"] tbody td:nth-child(8)::before { content: 'D '; font-size: 10px; color: var(--design-muted); }
+  [data-neis="table"] tbody td:nth-child(9)::before { content: 'E '; font-size: 10px; color: var(--design-muted); }
+
+  /* Other tables: horizontal scroll fallback */
+  .design-surface table:not([data-neis]) {
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;

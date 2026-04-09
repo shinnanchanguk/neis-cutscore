@@ -42,7 +42,7 @@ export function DesignNeisTable({
           </select>
         </div>
       </div>
-      <table style={designStyles.table as React.CSSProperties}>
+      <table data-neis="table" style={designStyles.table as React.CSSProperties}>
         <thead>
           <tr>
             <th rowSpan={2} style={designStyles.th as React.CSSProperties}>난이도</th>
