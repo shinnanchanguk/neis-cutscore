@@ -66,6 +66,7 @@ function AppHeader() {
                     whiteSpace: 'nowrap',
                   } as React.CSSProperties}
                   onClick={() => setDownloadOpen(true)}
+                  title="데이터가 외부로 나가지 않고 내 컴퓨터에 저장되게 하세요!"
                 >앱 다운로드</button>
               )}
             </div>
