@@ -74,7 +74,7 @@ export function DesignNeisTable({
                   style={designStyles.td as React.CSSProperties}
                   onClick={() => onCellClick?.(i, grade)}
                 >
-                  {g.rates[grade] ?? 0}
+                  {g.rates[grade] != null ? g.rates[grade] : ''}
                 </td>
               ))}
             </tr>

@@ -21,31 +21,28 @@ export function NeisTableSection() {
   };
   const [cellExplanation, setCellExplanation] = useState<CellExplanation | null>(null);
 
-  // Group items by difficulty only (matching NEIS 3-category structure)
-  const groupMap = new Map<Difficulty, { types: Set<ItemType>; difficulty: Difficulty; numbers: number[]; totalPoints: number }>();
+  // Build data per difficulty, then always output all 3 rows (NEIS fixed structure)
+  const difficultyData = new Map<Difficulty, { types: Set<ItemType>; numbers: number[]; totalPoints: number }>();
 
   for (const item of items) {
-    if (!groupMap.has(item.difficulty)) {
-      groupMap.set(item.difficulty, { types: new Set(), difficulty: item.difficulty, numbers: [], totalPoints: 0 });
+    if (!difficultyData.has(item.difficulty)) {
+      difficultyData.set(item.difficulty, { types: new Set(), numbers: [], totalPoints: 0 });
     }
-    const group = groupMap.get(item.difficulty)!;
+    const group = difficultyData.get(item.difficulty)!;
     group.types.add(item.type);
     group.numbers.push(item.number);
     group.totalPoints += item.points;
   }
 
-  // Sort groups by difficulty order
-  const sortedGroups = Array.from(groupMap.values()).sort((a, b) => {
-    return DIFFICULTY_ORDER.indexOf(a.difficulty) - DIFFICULTY_ORDER.indexOf(b.difficulty);
-  });
-
-  const groups = sortedGroups.map((g) => {
+  // Always 3 rows: 쉬움, 보통, 어려움 (even if no items for that difficulty)
+  const groups = DIFFICULTY_ORDER.map((difficulty) => {
+    const data = difficultyData.get(difficulty);
     const rates: Record<string, number> = {};
 
     if (output) {
       for (const grade of GRADES as Grade[]) {
         const cell = output.cells.find(
-          (c) => c.difficulty === g.difficulty && c.grade === grade
+          (c) => c.difficulty === difficulty && c.grade === grade
         );
         if (cell !== undefined) {
           rates[grade] = cell.value;
@@ -54,11 +51,11 @@ export function NeisTableSection() {
     }
 
     return {
-      type: Array.from(g.types).sort().join(', '),
-      difficulty: g.difficulty,
-      itemNumbers: g.numbers.sort((a, b) => a - b).join(', '),
-      itemCount: g.numbers.length,
-      totalPoints: g.totalPoints,
+      type: data ? Array.from(data.types).sort().join(', ') : '',
+      difficulty,
+      itemNumbers: data ? data.numbers.sort((a, b) => a - b).join(', ') : '',
+      itemCount: data?.numbers.length ?? 0,
+      totalPoints: data?.totalPoints ?? 0,
       rates,
     };
   });
@@ -66,10 +63,10 @@ export function NeisTableSection() {
   const handleCellClick = (groupIndex: number, grade: string) => {
     const validGrades: Grade[] = ['A', 'B', 'C', 'D', 'E'];
     if (!validGrades.includes(grade as Grade)) return;
-    const group = sortedGroups[groupIndex];
-    if (!group) return;
+    const difficulty = DIFFICULTY_ORDER[groupIndex];
+    if (!difficulty || !difficultyData.has(difficulty)) return;
     const explanation = explainCell(
-      group.difficulty,
+      difficulty,
       grade as Grade,
       items,
       targetDistribution,
