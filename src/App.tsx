@@ -11,6 +11,7 @@ import { FileMenu } from '@/components/shared/FileMenu';
 import { useExamStore } from '@/store/examStore';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { useAutoSave } from '@/hooks/useAutoSave';
+import { UpdateBanner } from '@/components/shared/UpdateBanner';
 import { designStyles } from '@/components/design/styles';
 import type React from 'react';
 
@@ -23,7 +24,14 @@ function AppHeader() {
       <header style={designStyles.appHeader as React.CSSProperties}>
         <div style={designStyles.appHeaderLeft as React.CSSProperties}>
           <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>NEIS 분할점수 계산기</h1>
-          <span style={{ ...designStyles.textSmall, ...designStyles.textMuted } as React.CSSProperties}>Made by DoRm</span>
+          <a
+            href="https://dorm-green.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ ...designStyles.textSmall, ...designStyles.textMuted, textDecoration: 'none', cursor: 'pointer' } as React.CSSProperties}
+            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+          >Made by DoRm</a>
         </div>
         <nav style={designStyles.appHeaderNav as React.CSSProperties}>
           <FileMenu />
@@ -46,6 +54,7 @@ function App() {
 
   return (
     <TooltipProvider>
+      <UpdateBanner />
       <div className="design-surface">
         <DesignLayout
           header={<AppHeader />}
