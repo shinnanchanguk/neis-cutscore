@@ -99,30 +99,6 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               </button>
             </div>
           </div>
-
-          {/* 예상 분포 표준편차 */}
-          <div style={sectionStyle}>
-            <label style={{ ...designStyles.label, marginBottom: '8px', display: 'block' }}>
-              예상 분포 표준편차 (σ)
-            </label>
-            <input
-              type="number"
-              min={5}
-              max={30}
-              value={settings.sigma}
-              onChange={e => {
-                const val = Number(e.target.value);
-                if (val >= 5 && val <= 30) {
-                  setSetting('sigma', val);
-                }
-              }}
-              style={{ ...designStyles.input, width: '120px' } as CSSProperties}
-            />
-            <div style={helperTextStyle}>
-              사후 검증용 예상 분포 계산에 사용됩니다. 기본값 15를 권장합니다.
-            </div>
-          </div>
-
           {/* 평가단계 */}
           <div style={sectionStyle}>
             <div style={sectionTitleStyle}>평가단계</div>

@@ -7,9 +7,10 @@ interface DesignTargetDistProps {
   onChange: (grade: string, value: number) => void;
   sum: number;
   warning?: string;
+  notices?: Array<{ tone: 'warning' | 'success'; text: string }>;
 }
 
-export function DesignTargetDist({ grades, values, onChange, sum, warning }: DesignTargetDistProps) {
+export function DesignTargetDist({ grades, values, onChange, sum, warning, notices = [] }: DesignTargetDistProps) {
   return (
     <>
       <div style={designStyles.targetDistRow as React.CSSProperties}>
@@ -29,6 +30,16 @@ export function DesignTargetDist({ grades, values, onChange, sum, warning }: Des
       {warning && (
         <div style={designStyles.inlineWarning as React.CSSProperties}>{warning}</div>
       )}
+      {notices.map((notice) => (
+        <div
+          key={notice.text}
+          style={(
+            notice.tone === 'warning' ? designStyles.inlineWarning : designStyles.inlineSuccess
+          ) as React.CSSProperties}
+        >
+          {notice.text}
+        </div>
+      ))}
     </>
   );
 }

@@ -188,8 +188,17 @@ export const designStyles = {
     display: 'flex',
     flexDirection: 'column',
   },
+  scoreCardWarning: {
+    borderColor: 'rgba(191, 87, 0, 0.65)',
+    backgroundColor: 'rgba(191, 87, 0, 0.08)',
+  },
+  scoreCardSuccess: {
+    borderColor: 'rgba(10, 122, 74, 0.55)',
+    backgroundColor: 'rgba(10, 122, 74, 0.08)',
+  },
   scoreLabel: { fontSize: '11px', color: 'var(--design-muted)', marginBottom: '4px' },
   scoreValue: { fontSize: '18px', fontWeight: 500 },
+  scoreHint: { fontSize: '11px', color: 'var(--design-muted)', marginTop: '8px', lineHeight: '1.4' },
   table: {
     width: '100%',
     borderCollapse: 'collapse',
@@ -248,6 +257,13 @@ export const designStyles = {
     fontSize: '11px',
     color: 'var(--design-fg)',
     borderLeft: '2px solid var(--design-fg)',
+    paddingLeft: '8px',
+    marginTop: '8px',
+  },
+  inlineSuccess: {
+    fontSize: '11px',
+    color: 'var(--design-muted)',
+    borderLeft: '2px solid rgba(10, 122, 74, 0.55)',
     paddingLeft: '8px',
     marginTop: '8px',
   },

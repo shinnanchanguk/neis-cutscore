@@ -23,6 +23,14 @@ export function TargetDistSection() {
   const warningA = targetDistribution.A > 40 ? 'A 등급 비율이 40%를 초과합니다.' : undefined;
   const warningE = targetDistribution.E > 40 ? 'E 등급 비율이 40%를 초과합니다. 최소 성취수준 미도달 학생 비율이 매우 높습니다.' : undefined;
   const warning = warningA ?? warningE;
+  const notices = [
+    targetDistribution.A <= 40
+      ? { tone: 'success' as const, text: `권고 충족: A 비율 ${targetDistribution.A}% (권고 40% 이하)` }
+      : { tone: 'warning' as const, text: `권고 미충족: A 비율 ${targetDistribution.A}% (권고 40% 이하)` },
+    targetDistribution.E <= 40
+      ? { tone: 'success' as const, text: `권고 충족: E 비율 ${targetDistribution.E}% (권고 40% 이하)` }
+      : { tone: 'warning' as const, text: `권고 미충족: E 비율 ${targetDistribution.E}% (권고 40% 이하)` },
+  ];
 
   const values: Record<string, number> = {};
   for (const g of GRADES) {
@@ -61,6 +69,7 @@ export function TargetDistSection() {
         onChange={handleChange}
         sum={sum}
         warning={warning}
+        notices={notices}
       />
     </DesignSection>
   );
