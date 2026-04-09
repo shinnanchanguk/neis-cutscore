@@ -27,7 +27,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUwNzNCNEQ3NEM1Qjk4NEYKUldSUG1GdE0xN1J6VUxBdHNyNG9LVHhsT1B2Q29FQXRzeldjYW5aa3RjTE95T2dyS3JnZjdXdWgK",
       "endpoints": [
         "https://github.com/shinnanchanguk/neis-cutscore/releases/latest/download/latest.json"
       ]
