@@ -205,3 +205,39 @@ td, th {
   overflow-wrap: break-word;
 }
 
+/* Mobile responsive layout */
+@media (max-width: 768px) {
+  [data-layout="root"] {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+  }
+
+  [data-layout="main"] {
+    flex-direction: column !important;
+  }
+
+  [data-layout="left"],
+  [data-layout="right"] {
+    flex: none !important;
+    border-right: none !important;
+    padding: 16px !important;
+    overflow-y: visible !important;
+  }
+
+  /* Header: stack vertically */
+  .design-surface header {
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 12px 16px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Tables: horizontal scroll */
+  .design-surface table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
