@@ -78,7 +78,7 @@ export function NeisTableSection() {
   };
 
   return (
-    <DesignSection title="NEIS 입력 표" isLast>
+    <DesignSection id="neis-output-section" title="NEIS 입력 표" isLast>
       <div
         style={{
           border: '1px solid rgba(10, 122, 74, 0.45)',
