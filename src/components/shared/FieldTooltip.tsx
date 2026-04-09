@@ -1,10 +1,10 @@
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/components/ui/tooltip';
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover';
 
 interface FieldTooltipProps {
   content: string;
@@ -15,26 +15,36 @@ export function FieldTooltip({ content, children }: FieldTooltipProps) {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
       {children}
-      <Tooltip>
-        <TooltipTrigger
+      <Popover>
+        <PopoverTrigger
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             background: 'none',
             border: 'none',
-            padding: 0,
+            padding: '4px',
             cursor: 'pointer',
             color: 'var(--design-muted)',
             lineHeight: 1,
+            touchAction: 'manipulation',
           }}
           aria-label="도움말"
         >
-          <HelpCircle size={14} />
-        </TooltipTrigger>
-        <TooltipContent style={{ maxWidth: '280px', whiteSpace: 'pre-line' }}>
+          <HelpCircle size={16} />
+        </PopoverTrigger>
+        <PopoverContent
+          style={{
+            maxWidth: '280px',
+            whiteSpace: 'pre-line',
+            fontSize: '12px',
+            lineHeight: 1.6,
+          }}
+          side="bottom"
+          align="start"
+        >
           {content}
-        </TooltipContent>
-      </Tooltip>
+        </PopoverContent>
+      </Popover>
     </span>
   );
 }
