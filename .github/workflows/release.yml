@@ -123,6 +123,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.version-and-tag.outputs.release_id }}
+          updaterJsonPreferNsis: true
           args: ${{ matrix.args }}
 
   # Step 3: Publish to both repos

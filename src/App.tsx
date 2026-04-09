@@ -24,14 +24,21 @@ function AppHeader() {
       <header style={designStyles.appHeader as React.CSSProperties}>
         <div style={designStyles.appHeaderLeft as React.CSSProperties}>
           <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>NEIS 분할점수 계산기</h1>
-          <a
-            href="https://dorm-green.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
+          <span
+            role="link"
+            tabIndex={0}
             style={{ ...designStyles.textSmall, ...designStyles.textMuted, textDecoration: 'none', cursor: 'pointer' } as React.CSSProperties}
             onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
             onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
-          >Made by DoRm</a>
+            onClick={async () => {
+              try {
+                const { open } = await import('@tauri-apps/plugin-shell');
+                await open('https://dorm-green.vercel.app/');
+              } catch {
+                window.open('https://dorm-green.vercel.app/', '_blank');
+              }
+            }}
+          >Made by DoRm</span>
         </div>
         <nav style={designStyles.appHeaderNav as React.CSSProperties}>
           <FileMenu />
