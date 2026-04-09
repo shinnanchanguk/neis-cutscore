@@ -382,6 +382,12 @@ describe('E/미도달 cutoff when includeE미도달 = true', () => {
     const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: false });
     expect(output.cutScores.E미도달).toBeUndefined();
   });
+
+  it('E미도달 cutoff stays below or equal to D/E cutoff', () => {
+    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    expect(output.cutScores.E미도달).toBeDefined();
+    expect(output.cutScores.E미도달!).toBeLessThanOrEqual(output.cutScores.DE);
+  });
 });
 
 // ─── explainCell tests ────────────────────────────────────────────────────────
@@ -417,20 +423,19 @@ describe('explainCell', () => {
     }
   });
 
-  it('E column explanation uses E boundary z-value (not DE)', () => {
+  it('E column explanation uses a lower boundary than D and stays above the extreme tail clamp', () => {
     const explanationE = explainCell('보통', 'E', items, PRESETS['일반고']);
     const explanationD = explainCell('보통', 'D', items, PRESETS['일반고']);
-    // E should use the lowest tail boundary, below D.
+    // E should stay below D, but it should be criterion-based rather than forced to -3.
     expect(explanationE.z_k).toBeLessThan(explanationD.z_k);
-    expect(explanationE.z_k).toBeCloseTo(-3.0, 0);
+    expect(explanationE.z_k).toBeGreaterThan(-3.0);
   });
 
-  it('E column explanation z_k matches actual computation z-value', () => {
-    const target = PRESETS['일반고'];
-    const cumABCDE = (target.A + target.B + target.C + target.D + target.E) / 100;
-    const z_E = clamp(PhiInv(1 - cumABCDE), -3, 3);
-    const explanation = explainCell('보통', 'E', items, target);
-    expect(explanation.z_k).toBeCloseTo(z_E, 5);
+  it('E column explanation aligns with the 40% minimum achievement criterion', () => {
+    const explanation = explainCell('보통', 'E', items, PRESETS['일반고']);
+    const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+    const expectedScore = explanation.items.reduce((sum, item) => sum + item.p_ik * item.points, 0);
+    expect(expectedScore / totalPoints).toBeCloseTo(0.4, 2);
   });
 
   it('E미도달 cut score stays near 40% of total points', () => {

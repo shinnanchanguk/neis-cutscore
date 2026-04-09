@@ -56,7 +56,7 @@ jobs:
       matrix:
         include:
           - platform: windows-latest
-            args: '--bundles nsis'
+            args: '--bundles nsis,updater'
           - platform: macos-latest
             args: '--target aarch64-apple-darwin'
           - platform: macos-latest
@@ -102,18 +102,36 @@ jobs:
 
       - name: Collect bundle files
         shell: python3 {0}
+        env:
+          BUILD_ARGS: ${{ matrix.args }}
         run: |
           import os, shutil
           os.makedirs('upload', exist_ok=True)
-          exts = ('.exe', '.msi', '.msi.zip', '.msi.zip.sig', '.nsis.zip', '.nsis.zip.sig',
+          exts = ('.exe', '.nsis.zip', '.nsis.zip.sig',
                   '.dmg', '.app.tar.gz', '.app.tar.gz.sig', '.AppImage', '.AppImage.sig',
                   '.deb', '.rpm')
+          # Detect target arch from build args
+          args = os.environ.get('BUILD_ARGS', '')
+          arch_prefix = ''
+          if 'aarch64' in args:
+              arch_prefix = '_aarch64'
+          elif 'x86_64' in args:
+              arch_prefix = '_x64'
           for root, dirs, files in os.walk('src-tauri/target'):
               for f in files:
                   if any(f.endswith(ext) for ext in exts):
                       src = os.path.join(root, f)
-                      shutil.copy2(src, os.path.join('upload', f))
-                      print(f'  {f}')
+                      # Add arch to .app.tar.gz files that lack it (macOS cross-compile)
+                      out_name = f
+                      if arch_prefix and '.app.tar.gz' in f and 'aarch64' not in f and 'x64' not in f:
+                          base = f.split('.app.tar.gz')[0]
+                          suffix = '.app.tar.gz' + f.split('.app.tar.gz')[1] if '.sig' in f else '.app.tar.gz'
+                          if f.endswith('.app.tar.gz.sig'):
+                              out_name = f'{base}{arch_prefix}.app.tar.gz.sig'
+                          else:
+                              out_name = f'{base}{arch_prefix}.app.tar.gz'
+                      shutil.copy2(src, os.path.join('upload', out_name))
+                      print(f'  {out_name}')
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
