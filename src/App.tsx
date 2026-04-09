@@ -26,7 +26,7 @@ function AppHeader() {
         <div style={designStyles.appHeaderLeft as React.CSSProperties}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' } as React.CSSProperties}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px' } as React.CSSProperties}>
-              <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>NEIS 분할점수 계산기</h1>
+              <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>추정 분할 점수 계산기</h1>
               <span
                 role="link"
                 tabIndex={0}

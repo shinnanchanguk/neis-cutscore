@@ -56,7 +56,7 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
       >
         <DialogHeader>
           <DialogTitle style={{ fontSize: '13px', fontWeight: 500 }}>
-            NEIS 분할점수 계산기 안내
+            추정 분할 점수 계산기 안내
           </DialogTitle>
         </DialogHeader>
 
