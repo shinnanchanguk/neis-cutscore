@@ -28,8 +28,7 @@ export function DesignNeisTable({
   grades,
   onCellClick,
 }: DesignNeisTableProps) {
-  const includesMidoal = mode === '5수준(A-E) + 미도달';
-  const colSpan = includesMidoal ? grades.length + 1 : grades.length;
+  const colSpan = grades.length;
 
   return (
     <>
@@ -59,9 +58,6 @@ export function DesignNeisTable({
             {grades.map((g) => (
               <th key={g} style={designStyles.th as React.CSSProperties}>{g}</th>
             ))}
-            {includesMidoal && (
-              <th style={designStyles.th as React.CSSProperties}>E_미도달</th>
-            )}
           </tr>
         </thead>
         <tbody>
@@ -81,14 +77,6 @@ export function DesignNeisTable({
                   {g.rates[grade] ?? 0}
                 </td>
               ))}
-              {includesMidoal && (
-                <td
-                  style={designStyles.td as React.CSSProperties}
-                  onClick={() => onCellClick?.(i, 'E_미도달')}
-                >
-                  {g.rates['E_미도달'] ?? 0}
-                </td>
-              )}
             </tr>
           ))}
         </tbody>

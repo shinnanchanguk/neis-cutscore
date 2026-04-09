@@ -6,44 +6,44 @@ import { CellPopover } from '@/components/shared/CellPopover';
 import { explainCell } from '@/lib/math/cutscore';
 import type { Difficulty, ItemType, Grade, CellExplanation } from '@/lib/types';
 
-type GroupKey = `${ItemType}|${Difficulty}`;
-
 const DIFFICULTY_ORDER: Difficulty[] = ['쉬움', '보통', '어려움'];
 const GRADES = ['A', 'B', 'C', 'D', 'E'];
 
 export function NeisTableSection() {
   const items = useExamStore((s) => s.items);
   const targetDistribution = useExamStore((s) => s.targetDistribution);
+  const includeE미도달 = useExamStore((s) => s.settings.includeE미도달);
+  const setSetting = useExamStore((s) => s.setSetting);
   const output = useNeisOutput();
-  const [mode, setMode] = useState('5수준(A-E) + 미도달');
+  const mode = includeE미도달 ? '5수준(A-E) + 미도달' : '5수준(A-E)';
+  const handleModeChange = (newMode: string) => {
+    setSetting('includeE미도달', newMode === '5수준(A-E) + 미도달');
+  };
   const [cellExplanation, setCellExplanation] = useState<CellExplanation | null>(null);
 
-  // Group items by (type + difficulty)
-  const groupMap = new Map<GroupKey, { type: ItemType; difficulty: Difficulty; numbers: number[]; totalPoints: number }>();
+  // Group items by difficulty only (matching NEIS 3-category structure)
+  const groupMap = new Map<Difficulty, { types: Set<ItemType>; difficulty: Difficulty; numbers: number[]; totalPoints: number }>();
 
   for (const item of items) {
-    const key: GroupKey = `${item.type}|${item.difficulty}`;
-    if (!groupMap.has(key)) {
-      groupMap.set(key, { type: item.type, difficulty: item.difficulty, numbers: [], totalPoints: 0 });
+    if (!groupMap.has(item.difficulty)) {
+      groupMap.set(item.difficulty, { types: new Set(), difficulty: item.difficulty, numbers: [], totalPoints: 0 });
     }
-    const group = groupMap.get(key)!;
+    const group = groupMap.get(item.difficulty)!;
+    group.types.add(item.type);
     group.numbers.push(item.number);
     group.totalPoints += item.points;
   }
 
-  // Sort groups: by difficulty order, then by type
+  // Sort groups by difficulty order
   const sortedGroups = Array.from(groupMap.values()).sort((a, b) => {
-    const dA = DIFFICULTY_ORDER.indexOf(a.difficulty);
-    const dB = DIFFICULTY_ORDER.indexOf(b.difficulty);
-    if (dA !== dB) return dA - dB;
-    return a.type.localeCompare(b.type);
+    return DIFFICULTY_ORDER.indexOf(a.difficulty) - DIFFICULTY_ORDER.indexOf(b.difficulty);
   });
 
   const groups = sortedGroups.map((g) => {
     const rates: Record<string, number> = {};
 
     if (output) {
-      for (const grade of GRADES as Array<'A' | 'B' | 'C' | 'D' | 'E'>) {
+      for (const grade of GRADES as Grade[]) {
         const cell = output.cells.find(
           (c) => c.difficulty === g.difficulty && c.grade === grade
         );
@@ -51,19 +51,12 @@ export function NeisTableSection() {
           rates[grade] = cell.value;
         }
       }
-      // E_미도달
-      const midoalCell = output.cells.find(
-        (c) => c.difficulty === g.difficulty && c.grade === 'E_미도달'
-      );
-      if (midoalCell !== undefined) {
-        rates['E_미도달'] = midoalCell.value;
-      }
     }
 
     return {
-      type: g.type,
+      type: Array.from(g.types).sort().join(', '),
       difficulty: g.difficulty,
-      itemNumbers: g.numbers.join(', '),
+      itemNumbers: g.numbers.sort((a, b) => a - b).join(', '),
       itemCount: g.numbers.length,
       totalPoints: g.totalPoints,
       rates,
@@ -71,7 +64,6 @@ export function NeisTableSection() {
   });
 
   const handleCellClick = (groupIndex: number, grade: string) => {
-    // Only explain A-E boundary grades (not E_미도달)
     const validGrades: Grade[] = ['A', 'B', 'C', 'D', 'E'];
     if (!validGrades.includes(grade as Grade)) return;
     const group = sortedGroups[groupIndex];
@@ -91,7 +83,7 @@ export function NeisTableSection() {
         totalGroups={groups.length}
         mode={mode}
         unit="5% 단위"
-        onModeChange={setMode}
+        onModeChange={handleModeChange}
         groups={groups}
         grades={GRADES}
         onCellClick={handleCellClick}

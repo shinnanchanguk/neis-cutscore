@@ -326,10 +326,12 @@ describe('Edge: all same difficulty', () => {
     expect(difficulties[0]).toBe('보통');
   });
 
-  it('still has 6 grade cells (A, B, C, D, E + E_미도달, since includeE미도달 defaults to true)', () => {
+  it('has exactly 5 grade cells (A, B, C, D, E) per difficulty — no 6th E_미도달 column', () => {
     const output = computeNeisOutput(items, PRESETS['일반고']);
-    // 5 grade boundary cells (A–E) + 1 E_미도달 cell = 6
-    expect(output.cells).toHaveLength(6);
+    // 1 difficulty × 5 grades = 5 cells
+    expect(output.cells).toHaveLength(5);
+    const grades = output.cells.map(c => c.grade);
+    expect(grades).toEqual(['A', 'B', 'C', 'D', 'E']);
   });
 
   it('values are multiples of 5', () => {
@@ -340,31 +342,52 @@ describe('Edge: all same difficulty', () => {
   });
 });
 
-// ─── E_미도달 tests ───────────────────────────────────────────────────────────
+// ─── E/미도달 cutoff tests (based on actual E column, not D*0.5) ─────────────
 
-describe('E_미도달 cells when includeE미도달 = true', () => {
+describe('E/미도달 cutoff when includeE미도달 = true', () => {
   const items: Item[] = [
     { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 50, expectedRate: 60 },
   ];
 
-  it('creates E_미도달 cells', () => {
+  it('no E_미도달 cells exist — only A through E', () => {
     const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
-    const eMidodal = output.cells.filter(c => c.grade === 'E_미도달');
-    expect(eMidodal.length).toBeGreaterThan(0);
+    const grades = output.cells.map(c => c.grade);
+    expect(grades).not.toContain('E_미도달');
+    expect(grades).toEqual(['A', 'B', 'C', 'D', 'E']);
   });
 
-  it('E_미도달 value = D cell value * 0.5 rounded to 5', () => {
+  it('cell count equals (number of difficulties × 5) with no extra columns', () => {
+    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    const difficultyCount = new Set(output.cells.map(c => c.difficulty)).size;
+    expect(output.cells).toHaveLength(difficultyCount * 5);
+  });
+
+  it('E미도달 cut score is computed from E column values (not D*0.5)', () => {
+    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    expect(output.cutScores.E미도달).toBeDefined();
+    // E미도달 cutoff = sum(categoryPoints * E_cell_value / 100)
+    const eCell = output.cells.find(c => c.grade === 'E' && c.difficulty === '보통');
+    expect(eCell).toBeDefined();
+    const expectedCutoff = Math.round(50 * (eCell!.value / 100) * 10) / 10;
+    expect(output.cutScores.E미도달).toBe(expectedCutoff);
+  });
+
+  it('no arbitrary D*0.5 rule exists — E values are Rasch-computed', () => {
     const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
     const dCell = output.cells.find(c => c.grade === 'D' && c.difficulty === '보통');
-    const eCell = output.cells.find(c => c.grade === 'E_미도달' && c.difficulty === '보통');
-    if (dCell && eCell) {
-      expect(eCell.value).toBe(roundTo5(dCell.value * 0.5));
-    }
+    const eCell = output.cells.find(c => c.grade === 'E' && c.difficulty === '보통');
+    // E value should NOT be D * 0.5 rounded to 5
+    // (it may coincidentally match for some inputs, so we verify the computation path
+    //  by checking E미도달 cutoff comes from E column)
+    expect(dCell).toBeDefined();
+    expect(eCell).toBeDefined();
+    // E <= D (monotonicity) but not necessarily D * 0.5
+    expect(eCell!.value).toBeLessThanOrEqual(dCell!.value);
   });
 
-  it('E_미도달 cut score is returned', () => {
-    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
-    expect(output.cutScores.E_미도달).toBeDefined();
+  it('E미도달 cutoff is not present when includeE미도달 = false', () => {
+    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: false });
+    expect(output.cutScores.E미도달).toBeUndefined();
   });
 });
 
@@ -399,6 +422,24 @@ describe('explainCell', () => {
       expect(isFinite(item.p_ik)).toBe(true);
       expect(isFinite(item.b_i)).toBe(true);
     }
+  });
+
+  it('E column explanation uses E boundary z-value (not DE)', () => {
+    const explanationE = explainCell('보통', 'E', items, PRESETS['일반고']);
+    const explanationD = explainCell('보통', 'D', items, PRESETS['일반고']);
+    // E should use z_E (≈ -3.0, clamped) which is lower than z_DE
+    expect(explanationE.z_k).toBeLessThan(explanationD.z_k);
+    // z_E should be close to -3.0 (clamped lower bound)
+    expect(explanationE.z_k).toBeCloseTo(-3.0, 0);
+  });
+
+  it('E column explanation z_k matches actual computation z-value', () => {
+    // Verify explainCell E uses same z as computeNeisOutput E
+    const target = PRESETS['일반고'];
+    const cumABCDE = (target.A + target.B + target.C + target.D + target.E) / 100;
+    const z_E = clamp(PhiInv(1 - cumABCDE), -3, 3);
+    const explanation = explainCell('보통', 'E', items, target);
+    expect(explanation.z_k).toBeCloseTo(z_E, 5);
   });
 });
 

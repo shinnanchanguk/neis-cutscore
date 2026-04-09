@@ -2,7 +2,7 @@ import type { NeisCell, TargetDistribution, Item, Warning } from '../types';
 
 export function validateOutput(
   _cells: NeisCell[],
-  cutScores: { AB: number; BC: number; CD: number; DE: number; E_미도달?: number },
+  cutScores: { AB: number; BC: number; CD: number; DE: number; E미도달?: number },
   target: TargetDistribution,
   items: Item[]
 ): Warning[] {

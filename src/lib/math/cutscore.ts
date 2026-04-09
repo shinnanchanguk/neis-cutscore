@@ -114,21 +114,7 @@ export function computeNeisOutput(
   // 4. Enforce monotonicity
   enforceMonotonicity(cells, presentCategories);
 
-  // 5. E_미도달: use D cell value * 0.5, rounded to 5%
-  if (includeE미도달) {
-    for (const category of presentCategories) {
-      const dCell = cells.find(c => c.difficulty === category && c.grade === 'D');
-      if (dCell) {
-        cells.push({
-          difficulty: category,
-          grade: 'E_미도달',
-          value: roundTo5(dCell.value * 0.5),
-        });
-      }
-    }
-  }
-
-  // 6. Compute cut scores: sum(catPoints * cellValue / 100) for each grade boundary
+  // 5. Compute cut scores: sum(catPoints * cellValue / 100) for each grade boundary
   function computeCutScore(grade: Grade): number {
     let score = 0;
     for (const category of presentCategories) {
@@ -150,17 +136,7 @@ export function computeNeisOutput(
   };
 
   if (includeE미도달) {
-    // E_미도달 cut score: use E_미도달 cells
-    let eMidodalScore = 0;
-    for (const category of presentCategories) {
-      const cell = cells.find(c => c.difficulty === category && c.grade === 'E_미도달');
-      const catItems = grouped[category];
-      const catPoints = catItems.reduce((sum, item) => sum + item.points, 0);
-      if (cell) {
-        eMidodalScore += catPoints * (cell.value / 100);
-      }
-    }
-    cutScores.E_미도달 = Math.round(eMidodalScore * 10) / 10;
+    cutScores.E미도달 = computeCutScore('E');
   }
 
   // 7. Compute predicted distribution using normal CDF with sigma parameter
@@ -214,7 +190,7 @@ export function explainCell(
     B: 'BC',
     C: 'CD',
     D: 'DE',
-    E: 'DE', // E uses DE boundary as reference
+    E: 'E',
   };
   const z_k = boundaryZ[gradeToKey[grade]] ?? 0;
 

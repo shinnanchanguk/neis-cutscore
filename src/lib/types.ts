@@ -25,7 +25,7 @@ export interface ExamMeta {
 
 export interface NeisCell {
   difficulty: Difficulty;
-  grade: Grade | 'E_미도달';
+  grade: Grade;
   value: number; // 0~100, multiple of 5
 }
 
@@ -43,7 +43,7 @@ export interface NeisOutput {
   cells: NeisCell[];
   cutScores: {
     AB: number; BC: number; CD: number; DE: number;
-    E_미도달?: number;
+    E미도달?: number;
   };
   predictedDistribution: TargetDistribution;
   warnings: Warning[];
