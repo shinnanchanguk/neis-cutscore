@@ -2,10 +2,12 @@ import { DesignSection, DesignScoreCards } from '@/components/design';
 import { designStyles } from '@/components/design/styles';
 import { useExamStore } from '@/store/examStore';
 import { useNeisOutput } from '@/hooks/useNeisOutput';
+import { DEFAULT_EXPECTED_UNMET_RATE } from '@/lib/presets';
 
 export function MinimumAchievementSection() {
   const items = useExamStore((s) => s.items);
   const includeE미도달 = useExamStore((s) => s.settings.includeE미도달);
+  const expectedUnmetRate = useExamStore((s) => s.settings.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE);
   const output = useNeisOutput();
 
   const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
@@ -24,10 +26,10 @@ export function MinimumAchievementSection() {
       value: includeE미도달 && estimatedThreshold != null ? `${estimatedThreshold}점` : '—',
       hint: includeE미도달
         ? advisoryMet == null
-          ? 'NEIS E열 기준 참고값'
+          ? `예상 미도달 ${expectedUnmetRate}% 반영`
           : advisoryMet
-            ? '고정 40% 기준보다 높음'
-            : '고정 40% 기준보다 낮음'
+            ? `예상 미도달 ${expectedUnmetRate}% 반영 · 40점 참고선보다 높음`
+            : `예상 미도달 ${expectedUnmetRate}% 반영 · 40점 참고선보다 낮음`
         : '5수준(A-E)+미도달 모드에서 표시',
       tone: includeE미도달 && advisoryMet != null
         ? (advisoryMet ? 'success' as const : 'warning' as const)

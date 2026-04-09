@@ -32,8 +32,7 @@ export function DesignNeisTable({
 
   return (
     <>
-      <div style={designStyles.sectionHeader as React.CSSProperties}>
-        <h2 style={designStyles.sectionTitle as React.CSSProperties}>NEIS 입력 표</h2>
+      <div style={{ ...designStyles.sectionActions, justifyContent: 'flex-end', marginBottom: '12px' } as React.CSSProperties}>
         <div style={designStyles.sectionActions as React.CSSProperties}>
           <select style={designStyles.selectSmall as React.CSSProperties} value={mode} onChange={(e) => onModeChange(e.target.value)}>
             <option>5수준(A-E) + 미도달</option>

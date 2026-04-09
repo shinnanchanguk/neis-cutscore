@@ -8,6 +8,7 @@ import { OnboardingModal } from '@/components/shared/OnboardingModal';
 import { HelpDialog } from '@/components/shared/HelpDialog';
 import { SettingsDialog } from '@/components/shared/SettingsDialog';
 import { FileMenu } from '@/components/shared/FileMenu';
+import { HeaderMetaFields } from '@/components/shared/HeaderMetaFields';
 import { useExamStore } from '@/store/examStore';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { useAutoSave } from '@/hooks/useAutoSave';
@@ -23,22 +24,27 @@ function AppHeader() {
     <>
       <header style={designStyles.appHeader as React.CSSProperties}>
         <div style={designStyles.appHeaderLeft as React.CSSProperties}>
-          <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>NEIS 분할점수 계산기</h1>
-          <span
-            role="link"
-            tabIndex={0}
-            style={{ ...designStyles.textSmall, ...designStyles.textMuted, textDecoration: 'none', cursor: 'pointer' } as React.CSSProperties}
-            onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
-            onClick={async () => {
-              try {
-                const { open } = await import('@tauri-apps/plugin-shell');
-                await open('https://dorm-green.vercel.app/');
-              } catch {
-                window.open('https://dorm-green.vercel.app/', '_blank');
-              }
-            }}
-          >Made by DoRm</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' } as React.CSSProperties}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px' } as React.CSSProperties}>
+              <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>NEIS 분할점수 계산기</h1>
+              <span
+                role="link"
+                tabIndex={0}
+                style={{ ...designStyles.textSmall, ...designStyles.textMuted, textDecoration: 'none', cursor: 'pointer', whiteSpace: 'nowrap' } as React.CSSProperties}
+                onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+                onClick={async () => {
+                  try {
+                    const { open } = await import('@tauri-apps/plugin-shell');
+                    await open('https://dorm-green.vercel.app/');
+                  } catch {
+                    window.open('https://dorm-green.vercel.app/', '_blank');
+                  }
+                }}
+              >Made by DoRm</span>
+            </div>
+          </div>
+          <HeaderMetaFields />
         </div>
         <nav style={designStyles.appHeaderNav as React.CSSProperties}>
           <FileMenu />

@@ -56,7 +56,7 @@ jobs:
       matrix:
         include:
           - platform: windows-latest
-            args: '--bundles nsis,updater'
+            args: '--bundles nsis'
           - platform: macos-latest
             args: '--target aarch64-apple-darwin'
           - platform: macos-latest

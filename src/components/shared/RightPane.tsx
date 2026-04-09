@@ -12,8 +12,8 @@ export function RightPane() {
       <CutScoresSection />
       <MinimumAchievementSection />
       <AdjustmentGuideSection />
-      <NeisTableSection />
       <AlertsSection />
+      <NeisTableSection />
     </>
   );
 }

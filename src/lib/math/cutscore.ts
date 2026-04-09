@@ -7,6 +7,7 @@ import type {
   NeisOutput,
   CellExplanation,
 } from '../types';
+import { DEFAULT_EXPECTED_UNMET_RATE } from '../presets';
 import { PhiInv, clamp } from './normal';
 import { boundaryItemProbability } from './rasch';
 import { roundTo5, enforceMonotonicity } from './rounding';
@@ -16,6 +17,7 @@ const DIFFICULTY_ORDER: Difficulty[] = ['쉬움', '보통', '어려움'];
 
 interface ComputeOptions {
   includeE미도달?: boolean;
+  expectedUnmetRate?: number;
 }
 
 /**
@@ -23,12 +25,23 @@ interface ComputeOptions {
  * z_AB = PhiInv(1 - A/100), z_BC = PhiInv(1 - (A+B)/100), etc.
  * Clamped to [-3, 3].
  */
-function computeBoundaryZ(target: TargetDistribution): Record<'AB' | 'BC' | 'CD' | 'DE' | 'E', number> {
-  const cumA = target.A / 100;
-  const cumAB = (target.A + target.B) / 100;
-  const cumABC = (target.A + target.B + target.C) / 100;
-  const cumABCD = (target.A + target.B + target.C + target.D) / 100;
-  const cumABCDE = (target.A + target.B + target.C + target.D + target.E) / 100;
+function computeBoundaryZ(
+  target: TargetDistribution,
+  options: ComputeOptions = {}
+): Record<'AB' | 'BC' | 'CD' | 'DE' | 'E', number> {
+  const includeE미도달 = options.includeE미도달 ?? true;
+  const expectedUnmetRate = clamp(
+    options.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE,
+    0,
+    99
+  ) / 100;
+  const achievedShare = includeE미도달 ? clamp(1 - expectedUnmetRate, 0.01, 0.999) : 1;
+
+  const cumA = achievedShare * (target.A / 100);
+  const cumAB = achievedShare * ((target.A + target.B) / 100);
+  const cumABC = achievedShare * ((target.A + target.B + target.C) / 100);
+  const cumABCD = achievedShare * ((target.A + target.B + target.C + target.D) / 100);
+  const cumABCDE = includeE미도달 ? achievedShare : 1;
 
   return {
     AB: clamp(PhiInv(1 - cumA), -3, 3),
@@ -48,11 +61,15 @@ export function computeNeisOutput(
   options: ComputeOptions = {}
 ): NeisOutput {
   const includeE미도달 = options.includeE미도달 ?? true;
+  const expectedUnmetRate = options.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE;
 
   // Handle empty items case
   if (items.length === 0) {
     const emptyCutScores = { AB: 0, BC: 0, CD: 0, DE: 0 };
-    const warnings = validateOutput([], emptyCutScores, target, []);
+    const warnings = validateOutput([], emptyCutScores, target, [], {
+      includeE미도달,
+      expectedUnmetRate,
+    });
     return {
       cells: [],
       cutScores: emptyCutScores,
@@ -61,7 +78,7 @@ export function computeNeisOutput(
   }
 
   // 1. Compute boundary z-values
-  const boundaryZ = computeBoundaryZ(target);
+  const boundaryZ = computeBoundaryZ(target, { includeE미도달, expectedUnmetRate });
   const boundaryEntries: Array<{ grade: Grade; z: number }> = [
     { grade: 'A', z: boundaryZ.AB },
     { grade: 'B', z: boundaryZ.BC },
@@ -135,7 +152,10 @@ export function computeNeisOutput(
   }
 
   // 8. Validate and generate warnings
-  const warnings = validateOutput(cells, cutScores, target, items);
+  const warnings = validateOutput(cells, cutScores, target, items, {
+    includeE미도달,
+    expectedUnmetRate,
+  });
 
   return {
     cells,
@@ -151,9 +171,10 @@ export function explainCell(
   category: Difficulty,
   grade: Grade,
   items: Item[],
-  target: TargetDistribution
+  target: TargetDistribution,
+  options: ComputeOptions = {}
 ): CellExplanation {
-  const boundaryZ = computeBoundaryZ(target);
+  const boundaryZ = computeBoundaryZ(target, options);
   const gradeToKey: Record<Grade, 'AB' | 'BC' | 'CD' | 'DE' | 'E'> = {
     A: 'AB',
     B: 'BC',

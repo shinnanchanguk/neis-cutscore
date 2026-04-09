@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { ExamMeta, ExamProject, Grade, Item, PresetName, TargetDistribution } from '@/lib/types';
-import { PRESETS } from '@/lib/presets';
+import { DEFAULT_EXPECTED_UNMET_RATE, PRESETS } from '@/lib/presets';
 
 interface ExamSettings {
   includeE미도달: boolean;
+  expectedUnmetRate: number;
   darkMode: 'system' | 'light' | 'dark';
   onboardingCompleted: boolean;
 }
@@ -58,6 +59,7 @@ const DEFAULT_META: ExamMeta = {
 
 const DEFAULT_SETTINGS: ExamSettings = {
   includeE미도달: true,
+  expectedUnmetRate: DEFAULT_EXPECTED_UNMET_RATE,
   darkMode: 'light',
   onboardingCompleted: false,
 };
@@ -178,6 +180,7 @@ export const useExamStore = create<ExamState>()(
           settings: {
             ...DEFAULT_SETTINGS,
             includeE미도달: project.settings.includeE미도달,
+            expectedUnmetRate: project.settings.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE,
           },
           presetName: '사용자정의',
           currentFilePath: null,
@@ -193,6 +196,7 @@ export const useExamStore = create<ExamState>()(
           items: state.items,
           settings: {
             includeE미도달: state.settings.includeE미도달,
+            expectedUnmetRate: state.settings.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE,
           },
           createdAt: now,
           updatedAt: now,
@@ -213,6 +217,17 @@ export const useExamStore = create<ExamState>()(
     }),
     {
       name: 'neis-cutscore-store',
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<ExamState>;
+        return {
+          ...currentState,
+          ...persisted,
+          settings: {
+            ...currentState.settings,
+            ...persisted.settings,
+          },
+        };
+      },
     }
   )
 );

@@ -1,5 +1,7 @@
 import type { TargetDistribution, PresetName } from './types';
 
+export const DEFAULT_EXPECTED_UNMET_RATE = 5;
+
 export const PRESETS: Record<PresetName, TargetDistribution> = {
   일반고: { A: 15, B: 30, C: 30, D: 18, E: 7 },
   과고_특목고: { A: 35, B: 35, C: 20, D: 8, E: 2 },

@@ -14,14 +14,14 @@ export const designStyles = {
   appHeader: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'baseline',
+    alignItems: 'flex-start',
     padding: '16px 24px',
     borderBottom: '1px solid var(--design-border)',
     flexShrink: 0,
   },
-  appHeaderLeft: { display: 'flex', alignItems: 'baseline', gap: '16px' },
-  appHeaderH1: { fontSize: '16px', fontWeight: 500, letterSpacing: '-0.02em', margin: 0 },
-  appHeaderNav: { display: 'flex', gap: '16px' },
+  appHeaderLeft: { display: 'flex', alignItems: 'flex-start', gap: '16px', minWidth: 0, flex: 1 },
+  appHeaderH1: { fontSize: '16px', fontWeight: 500, letterSpacing: '-0.02em', margin: 0, whiteSpace: 'nowrap' },
+  appHeaderNav: { display: 'flex', gap: '16px', paddingTop: '2px', flexShrink: 0 },
   appMain: { display: 'flex', flex: 1, overflow: 'hidden' },
   paneLeft: {
     flex: 55,

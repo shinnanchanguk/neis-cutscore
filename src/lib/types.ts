@@ -58,7 +58,10 @@ export interface ExamProject {
   meta: ExamMeta;
   targetDistribution: TargetDistribution;
   items: Item[];
-  settings: { includeE미도달: boolean };
+  settings: {
+    includeE미도달: boolean;
+    expectedUnmetRate?: number;
+  };
   createdAt: string;
   updatedAt: string;
   version: string;

@@ -1,37 +1,18 @@
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { DesignSection, DesignAlerts, DesignCopyButton } from '@/components/design';
+import { DesignSection, DesignAlerts } from '@/components/design';
 import { useNeisOutput } from '@/hooks/useNeisOutput';
-import { copyToNeisFormat } from '@/lib/clipboard';
 
 export function AlertsSection() {
   const output = useNeisOutput();
-  const [copied, setCopied] = useState(false);
 
-  const alerts = output
-    ? output.warnings.map((w) => ({ level: w.level, message: w.message }))
-    : [{ level: 'info' as const, message: '문항을 추가하면 결과가 표시됩니다.' }];
-
-  const handleCopy = async () => {
-    if (!output) return;
-    try {
-      await copyToNeisFormat(output.cells);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      toast.success('복사 완료!');
-    } catch {
-      toast.error('복사 실패. 클립보드 권한을 확인하세요.');
-    }
-  };
+  const alerts = !output
+    ? [{ level: 'info' as const, message: '문항을 추가하면 결과가 표시됩니다.' }]
+    : output.warnings.length > 0
+      ? output.warnings.map((w) => ({ level: w.level, message: w.message }))
+      : [{ level: 'info' as const, message: '현재 입력에서 확인된 문제는 없습니다.' }];
 
   return (
-    <DesignSection title="알림" isLast>
+    <DesignSection title="알림">
       <DesignAlerts alerts={alerts} />
-      <DesignCopyButton
-        copied={copied}
-        onClick={handleCopy}
-        hint="NEIS 성적처리 화면의 표에 붙여넣기 하세요"
-      />
     </DesignSection>
   );
 }

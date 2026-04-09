@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { DesignSection, DesignNeisTable } from '@/components/design';
 import { useExamStore } from '@/store/examStore';
 import { useNeisOutput } from '@/hooks/useNeisOutput';
 import { CellPopover } from '@/components/shared/CellPopover';
 import { explainCell } from '@/lib/math/cutscore';
+import { DEFAULT_EXPECTED_UNMET_RATE } from '@/lib/presets';
 import type { Difficulty, ItemType, Grade, CellExplanation } from '@/lib/types';
 
 const DIFFICULTY_ORDER: Difficulty[] = ['쉬움', '보통', '어려움'];
@@ -13,6 +14,7 @@ export function NeisTableSection() {
   const items = useExamStore((s) => s.items);
   const targetDistribution = useExamStore((s) => s.targetDistribution);
   const includeE미도달 = useExamStore((s) => s.settings.includeE미도달);
+  const expectedUnmetRate = useExamStore((s) => s.settings.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE);
   const setSetting = useExamStore((s) => s.setSetting);
   const output = useNeisOutput();
   const mode = includeE미도달 ? '5수준(A-E) + 미도달' : '5수준(A-E)';
@@ -70,21 +72,30 @@ export function NeisTableSection() {
       grade as Grade,
       items,
       targetDistribution,
+      { includeE미도달, expectedUnmetRate },
     );
     setCellExplanation(explanation);
   };
 
   return (
-    <DesignSection title="NEIS 입력 표">
-      <DesignNeisTable
-        totalGroups={groups.length}
-        mode={mode}
-        unit="5% 단위"
-        onModeChange={handleModeChange}
-        groups={groups}
-        grades={GRADES}
-        onCellClick={handleCellClick}
-      />
+    <DesignSection title="NEIS 입력 표" isLast>
+      <div
+        style={{
+          border: '1px solid rgba(10, 122, 74, 0.45)',
+          backgroundColor: 'rgba(10, 122, 74, 0.05)',
+          padding: '16px',
+        } as React.CSSProperties}
+      >
+        <DesignNeisTable
+          totalGroups={groups.length}
+          mode={mode}
+          unit="5% 단위"
+          onModeChange={handleModeChange}
+          groups={groups}
+          grades={GRADES}
+          onCellClick={handleCellClick}
+        />
+      </div>
       {/* CellPopover is rendered as a controlled popover. The trigger is a hidden span;
           open state is driven by cellExplanation state set via onCellClick. */}
       <CellPopover

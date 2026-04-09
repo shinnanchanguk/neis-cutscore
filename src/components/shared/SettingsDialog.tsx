@@ -117,7 +117,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               </button>
             </div>
             <div style={helperTextStyle}>
-              "5수준+미도달" 선택 시 E/미도달 경계 분할점수가 추가로 표시됩니다. NEIS 입력 표의 열(A~E)은 동일합니다.
+              "5수준+미도달" 선택 시 목표 등급 비율 아래에 예상 미도달 비율 입력이 함께 보입니다. E/미도달 경계와 E열은 그 값을 반영해 계산됩니다.
             </div>
           </div>
 

@@ -1,10 +1,16 @@
 import type { NeisCell, TargetDistribution, Item, Warning } from '../types';
 
+interface ValidationOptions {
+  includeE미도달: boolean;
+  expectedUnmetRate: number;
+}
+
 export function validateOutput(
   _cells: NeisCell[],
   _cutScores: { AB: number; BC: number; CD: number; DE: number; E미도달?: number },
   _target: TargetDistribution,
-  items: Item[]
+  items: Item[],
+  options: ValidationOptions
 ): Warning[] {
   const warnings: Warning[] = [];
 
@@ -30,6 +36,14 @@ export function validateOutput(
   }
 
   if (items.length > 0) {
+    if (options.includeE미도달 && options.expectedUnmetRate <= 0) {
+      warnings.push({
+        level: 'warning',
+        code: 'UNMET_RATE_ZERO',
+        message: '5수준(A-E)+미도달인데 예상 미도달 비율이 0%입니다. E열이 지나치게 낮아질 수 있으니 실제 미도달 가능성을 다시 점검하세요.',
+      });
+    }
+
     // ALL_LOW_RATE: all items expectedRate < 20
     const allLow = items.every(item => item.expectedRate < 20);
     if (allLow) {

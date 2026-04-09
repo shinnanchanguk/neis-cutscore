@@ -3,6 +3,7 @@ import { DesignSection } from '@/components/design';
 import { designStyles } from '@/components/design/styles';
 import { useExamStore } from '@/store/examStore';
 import { useNeisOutput } from '@/hooks/useNeisOutput';
+import { DEFAULT_EXPECTED_UNMET_RATE } from '@/lib/presets';
 
 function formatPercent(value: number): string {
   return `${Math.round(value * 10) / 10}%`;
@@ -12,6 +13,7 @@ export function AdjustmentGuideSection() {
   const items = useExamStore((s) => s.items);
   const targetDistribution = useExamStore((s) => s.targetDistribution);
   const includeE미도달 = useExamStore((s) => s.settings.includeE미도달);
+  const expectedUnmetRate = useExamStore((s) => s.settings.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE);
   const output = useNeisOutput();
 
   if (!output || items.length === 0) return null;
@@ -32,6 +34,9 @@ export function AdjustmentGuideSection() {
 
   if (includeE미도달 && eCut != null && eCut < referenceScore) {
     reasons.push(`추정 E/미도달이 ${eCut}점이라 고정 40% 기준(${referenceScore}점)보다 낮습니다. 추정분할점수에서는 이런 차이가 생길 수 있으니 최소 성취수준 지도를 별도로 점검하세요.`);
+  }
+  if (includeE미도달 && expectedUnmetRate <= 0) {
+    reasons.push('예상 미도달 비율이 0%라 E열이 분포 맨 아래 극단값에 가까워집니다. 이 경우 E 예상 정답률이 지나치게 낮아질 수 있습니다.');
   }
   if (output.cutScores.DE < 20) {
     reasons.push(`D/E가 ${output.cutScores.DE}점으로 낮습니다. 현재 목표 E=${targetDistribution.E}%라 하위 경계가 매우 낮게 잡혀 있습니다.`);
@@ -54,6 +59,9 @@ export function AdjustmentGuideSection() {
   }
   if (expectedScore < 60) {
     actions.push('쉬움·보통 문항에서 확보되는 점수가 너무 적지 않은지 보세요. 평균 기대점수 자체가 올라가야 하위 경계도 함께 올라갑니다.');
+  }
+  if (includeE미도달 && expectedUnmetRate <= 0) {
+    actions.push('실제 수업과 평가 계획상 미도달 가능성이 전혀 0이 아닌데도 0%로 둔 것은 아닌지 보세요. 너무 낮게 두면 E열이 과하게 낮아집니다.');
   }
   if (targetDistribution.E <= 3) {
     actions.push(`학교 합의상 가능하다면 목표 E 비율 ${targetDistribution.E}%를 완화하는 방안도 있습니다. E 비율이 작을수록 하위 경계는 더 낮아집니다.`);
