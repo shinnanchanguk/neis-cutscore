@@ -1,24 +1,60 @@
-import { DesignLayout, DesignHeader } from '@/components/design';
+import { useState } from 'react';
+import { DesignLayout } from '@/components/design';
 import { LeftPane } from '@/components/shared/LeftPane';
 import { RightPane } from '@/components/shared/RightPane';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { OnboardingModal } from '@/components/shared/OnboardingModal';
+import { HelpDialog } from '@/components/shared/HelpDialog';
+import { SettingsDialog } from '@/components/shared/SettingsDialog';
+import { FileMenu } from '@/components/shared/FileMenu';
+import { useExamStore } from '@/store/examStore';
+import { useDarkMode } from '@/hooks/useDarkMode';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { designStyles } from '@/components/design/styles';
+import type React from 'react';
+
+function AppHeader() {
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  return (
+    <>
+      <header style={designStyles.appHeader as React.CSSProperties}>
+        <div style={designStyles.appHeaderLeft as React.CSSProperties}>
+          <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>NEIS 분할점수 계산기</h1>
+          <span style={{ ...designStyles.textSmall, ...designStyles.textMuted } as React.CSSProperties}>Made by DoRm</span>
+        </div>
+        <nav style={designStyles.appHeaderNav as React.CSSProperties}>
+          <FileMenu />
+          <button style={designStyles.navLink as React.CSSProperties} onClick={() => setHelpOpen(true)}>도움말</button>
+          <button style={designStyles.navLink as React.CSSProperties} onClick={() => setSettingsOpen(true)}>설정</button>
+        </nav>
+      </header>
+      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+    </>
+  );
+}
 
 function App() {
+  useDarkMode();
+  useAutoSave();
+
+  const onboardingCompleted = useExamStore((s) => s.settings.onboardingCompleted);
+  const [showOnboarding, setShowOnboarding] = useState(!onboardingCompleted);
+
   return (
     <TooltipProvider>
-      <DesignLayout
-        header={
-          <DesignHeader
-            title="NEIS 분할점수 계산기"
-            subtitle="Made by DoRm"
-            navItems={[
-              { label: '도움말', onClick: () => {} },
-              { label: '설정', onClick: () => {} },
-            ]}
-          />
-        }
-        leftPane={<LeftPane />}
-        rightPane={<RightPane />}
+      <div className="design-surface">
+        <DesignLayout
+          header={<AppHeader />}
+          leftPane={<LeftPane />}
+          rightPane={<RightPane />}
+        />
+      </div>
+      <OnboardingModal
+        open={showOnboarding}
+        onOpenChange={setShowOnboarding}
       />
     </TooltipProvider>
   );

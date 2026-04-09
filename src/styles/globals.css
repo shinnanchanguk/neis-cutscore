@@ -179,3 +179,12 @@ button.btn-primary-hover:hover {
     @apply font-sans;
   }
 }
+
+/* Dark mode: invert the cream-colored design surface */
+.dark .design-surface {
+  filter: invert(0.88) hue-rotate(180deg);
+}
+
+.dark .design-surface img {
+  filter: invert(1) hue-rotate(180deg);
+}
