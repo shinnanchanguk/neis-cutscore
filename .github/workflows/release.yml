@@ -177,6 +177,94 @@ jobs:
               );
             }
 
+      - name: Generate latest.json for updater
+        uses: actions/github-script@v7
+        env:
+          VERSION: ${{ needs.version-and-tag.outputs.new_version }}
+          REPO: shinnanchanguk/neis-cutscore-releases
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const version = process.env.VERSION;
+            const repo = process.env.REPO;
+            const dir = 'release-assets';
+            const files = fs.readdirSync(dir);
+
+            // Find signature files
+            const findSig = (pattern) => {
+              const sigFile = files.find(f => f.includes(pattern) && f.endsWith('.sig'));
+              if (!sigFile) return '';
+              return fs.readFileSync(path.join(dir, sigFile), 'utf8').trim();
+            };
+
+            // Find download URL pattern
+            const baseUrl = `https://github.com/${repo}/releases/download/v${version}`;
+            const findUrl = (pattern) => {
+              const file = files.find(f => f.includes(pattern) && !f.endsWith('.sig'));
+              return file ? `${baseUrl}/${file}` : '';
+            };
+
+            const now = new Date().toISOString();
+            const latest = {
+              version: `v${version}`,
+              notes: `v${version} release`,
+              pub_date: now,
+              platforms: {}
+            };
+
+            // Windows NSIS
+            const nsisFile = files.find(f => f.includes('x64-setup') && f.endsWith('.nsis.zip'));
+            const nsisExe = files.find(f => f.includes('x64-setup.exe') && !f.endsWith('.sig'));
+            const nsisSig = files.find(f => f.includes('nsis.zip.sig'));
+            if (nsisFile && nsisSig) {
+              latest.platforms['windows-x86_64'] = {
+                signature: fs.readFileSync(path.join(dir, nsisSig), 'utf8').trim(),
+                url: `${baseUrl}/${nsisFile}`
+              };
+            } else if (nsisExe) {
+              // Fallback: use .exe.sig
+              const exeSig = files.find(f => f.includes('x64-setup.exe.sig'));
+              if (exeSig) {
+                latest.platforms['windows-x86_64'] = {
+                  signature: fs.readFileSync(path.join(dir, exeSig), 'utf8').trim(),
+                  url: `${baseUrl}/${nsisExe}`
+                };
+              }
+            }
+
+            // macOS
+            const macArm = files.find(f => f.includes('aarch64.app.tar.gz') && !f.endsWith('.sig'));
+            const macArmSig = files.find(f => f.includes('aarch64.app.tar.gz.sig'));
+            if (macArm && macArmSig) {
+              latest.platforms['darwin-aarch64'] = {
+                signature: fs.readFileSync(path.join(dir, macArmSig), 'utf8').trim(),
+                url: `${baseUrl}/${macArm}`
+              };
+            }
+
+            const macX64 = files.find(f => f.includes('x64.app.tar.gz') && !f.endsWith('.sig'));
+            const macX64Sig = files.find(f => f.includes('x64.app.tar.gz.sig'));
+            if (macX64 && macX64Sig) {
+              latest.platforms['darwin-x86_64'] = {
+                signature: fs.readFileSync(path.join(dir, macX64Sig), 'utf8').trim(),
+                url: `${baseUrl}/${macX64}`
+              };
+            }
+
+            // Linux
+            const linuxAppImage = files.find(f => f.includes('AppImage') && !f.endsWith('.sig'));
+            const linuxSig = files.find(f => f.includes('AppImage') && f.endsWith('.sig'));
+            if (linuxAppImage && linuxSig) {
+              latest.platforms['linux-x86_64'] = {
+                signature: fs.readFileSync(path.join(dir, linuxSig), 'utf8').trim(),
+                url: `${baseUrl}/${linuxAppImage}`
+              };
+            }
+
+            console.log('latest.json:', JSON.stringify(latest, null, 2));
+            fs.writeFileSync(path.join(dir, 'latest.json'), JSON.stringify(latest, null, 2));
+
       - name: Publish to public releases repo
         uses: softprops/action-gh-release@v2
         with:
