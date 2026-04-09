@@ -128,12 +128,15 @@ jobs:
           args: ${{ matrix.args }}
 
       - name: Find and upload sig files
-        shell: bash
+        shell: pwsh
         run: |
-          mkdir -p sig-upload
-          find src-tauri/target -name "*.sig" -type f -exec cp {} sig-upload/ \; 2>/dev/null || true
-          echo "Found sig files:"
-          ls -la sig-upload/ 2>/dev/null || echo "none"
+          New-Item -ItemType Directory -Force -Path sig-upload | Out-Null
+          Get-ChildItem -Path src-tauri/target -Recurse -Filter "*.sig" -File -ErrorAction SilentlyContinue | ForEach-Object {
+            Write-Host "Found: $($_.FullName)"
+            Copy-Item $_.FullName -Destination sig-upload/
+          }
+          Write-Host "Sig files in sig-upload:"
+          Get-ChildItem sig-upload/ -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.Name }
 
       - name: Upload sig files as artifacts
         uses: actions/upload-artifact@v4

@@ -49,10 +49,13 @@ export function validateOutput(
 
   // MIN_LEVEL_WARN: cutScores.DE < 40
   if (cutScores.DE < 40) {
+    const percentileNote = target.E > 0
+      ? ` 현재 목표 비율에서는 D/E가 하위 ${target.E}% 경계입니다.`
+      : ' 현재 목표 비율에서는 D/E가 E 진입선입니다.';
     warnings.push({
       level: 'warning',
       code: 'MIN_LEVEL_WARN',
-      message: `D-E 경계 점수가 40점 미만입니다 (현재: ${cutScores.DE}점). 최저 학력 기준을 확인하세요.`,
+      message: `D-E 경계 점수가 40점 미만입니다 (현재: ${cutScores.DE}점).${percentileNote} 최저 학력 기준을 확인하세요.`,
     });
   }
 
