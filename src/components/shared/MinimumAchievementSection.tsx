@@ -1,4 +1,3 @@
-import React from 'react';
 import { DesignSection, DesignScoreCards } from '@/components/design';
 import { designStyles } from '@/components/design/styles';
 import { useExamStore } from '@/store/examStore';

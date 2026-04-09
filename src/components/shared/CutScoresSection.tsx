@@ -1,6 +1,5 @@
 import { DesignSection, DesignScoreCards } from '@/components/design';
 import { designStyles } from '@/components/design/styles';
-import { useExamStore } from '@/store/examStore';
 import { useNeisOutput } from '@/hooks/useNeisOutput';
 
 export function CutScoresSection() {
