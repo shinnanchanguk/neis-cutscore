@@ -20,6 +20,7 @@ export function DesignItemRow({ item, onUpdate, onDelete, onDuplicate }: DesignI
 
   return (
     <div
+      data-item="row"
       style={{ ...designStyles.itemRow, borderBottomColor: hovered ? 'var(--design-border)' : 'transparent' } as React.CSSProperties}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -40,18 +41,18 @@ export function DesignItemRow({ item, onUpdate, onDelete, onDuplicate }: DesignI
         value={item.score}
         onChange={(e) => onUpdate('score', Number(e.target.value))}
       />
-      <div style={designStyles.sliderContainer as React.CSSProperties}>
+      <div data-item="slider" style={designStyles.sliderContainer as React.CSSProperties}>
         <input
           type="range"
           min="0"
           max="100"
           value={item.correctRate}
-          style={{ width: '100%' }}
+          style={{ width: '100%', touchAction: 'none' }}
           onChange={(e) => onUpdate('correctRate', Number(e.target.value))}
         />
         <span style={designStyles.sliderValue as React.CSSProperties}>{item.correctRate}%</span>
       </div>
-      <div style={(hovered ? designStyles.rowActionsHover : designStyles.rowActions) as React.CSSProperties}>
+      <div data-item="actions" style={(hovered ? designStyles.rowActionsHover : designStyles.rowActions) as React.CSSProperties}>
         <button style={designStyles.btnText as React.CSSProperties} onClick={onDuplicate}>복제</button>
         <button style={designStyles.btnText as React.CSSProperties} onClick={onDelete}>삭제</button>
       </div>

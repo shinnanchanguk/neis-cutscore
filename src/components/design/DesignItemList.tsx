@@ -45,7 +45,7 @@ export function DesignItemList({
       </div>
 
       <div>
-        <div style={designStyles.itemListHeader as React.CSSProperties}>
+        <div data-item="header" style={designStyles.itemListHeader as React.CSSProperties}>
           <div>번호</div>
           <div>난이도</div>
           <div>배점</div>

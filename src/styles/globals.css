@@ -205,18 +205,21 @@ td, th {
   overflow-wrap: break-word;
 }
 
-/* Mobile responsive layout */
+/* ===== Mobile responsive layout ===== */
 @media (max-width: 768px) {
+  /* Root: allow scroll instead of fixed viewport */
   [data-layout="root"] {
     height: auto !important;
     min-height: 100vh !important;
     overflow: visible !important;
   }
 
+  /* Main: stack panes vertically */
   [data-layout="main"] {
     flex-direction: column !important;
   }
 
+  /* Panes: full width, no border */
   [data-layout="left"],
   [data-layout="right"] {
     flex: none !important;
@@ -225,7 +228,11 @@ td, th {
     overflow-y: visible !important;
   }
 
-  /* Header: stack vertically */
+  [data-layout="right"] {
+    border-top: 1px solid var(--design-border) !important;
+  }
+
+  /* Header: stack vertically, wrap content */
   .design-surface header {
     flex-direction: column !important;
     gap: 8px !important;
@@ -233,11 +240,60 @@ td, th {
     align-items: flex-start !important;
   }
 
+  /* Item list: 2-row card layout per item */
+  [data-item="header"] {
+    display: none !important;
+  }
+
+  [data-item="row"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 12px 0 !important;
+    border-bottom: 1px solid var(--design-border) !important;
+    align-items: center !important;
+  }
+
+  /* Slider: full width on its own row, taller touch target */
+  [data-item="slider"] {
+    flex: 1 1 100% !important;
+    order: 10 !important;
+    min-width: 0 !important;
+    padding: 4px 0 !important;
+  }
+
+  [data-item="slider"] input[type="range"] {
+    height: 32px !important;
+    padding: 12px 0 !important;
+  }
+
+  /* Actions: always visible on mobile (no hover) */
+  [data-item="actions"] {
+    opacity: 1 !important;
+  }
+
+  /* Slider thumb: bigger for touch */
+  input[type=range]::-webkit-slider-thumb {
+    height: 24px !important;
+    width: 14px !important;
+    margin-top: -11px !important;
+  }
+
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 2px !important;
+  }
+
   /* Tables: horizontal scroll */
   .design-surface table {
     display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Section actions: wrap buttons */
+  .design-surface [style*="sectionActions"],
+  .design-surface div[style*="gap: '8px'"][style*="alignItems: 'center'"] {
+    flex-wrap: wrap !important;
   }
 }
 
