@@ -1,7 +1,7 @@
 export const designStyles = {
   root: {
-    backgroundColor: '#EBE8E3',
-    color: '#1A1A1A',
+    backgroundColor: 'var(--design-bg)',
+    color: 'var(--design-fg)',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     fontSize: '13px',
     lineHeight: '1.4',
@@ -16,7 +16,7 @@ export const designStyles = {
     justifyContent: 'space-between',
     alignItems: 'baseline',
     padding: '16px 24px',
-    borderBottom: '1px solid #D4D1C9',
+    borderBottom: '1px solid var(--design-border)',
     flexShrink: 0,
   },
   appHeaderLeft: { display: 'flex', alignItems: 'baseline', gap: '16px' },
@@ -27,18 +27,18 @@ export const designStyles = {
     flex: 55,
     overflowY: 'auto',
     padding: '32px',
-    borderRight: '1px solid #D4D1C9',
+    borderRight: '1px solid var(--design-border)',
   },
   paneRight: {
     flex: 45,
     overflowY: 'auto',
     padding: '32px',
-    backgroundColor: '#EBE8E3',
+    backgroundColor: 'var(--design-bg)',
   },
   section: {
     marginBottom: '32px',
     paddingBottom: '32px',
-    borderBottom: '1px solid #D4D1C9',
+    borderBottom: '1px solid var(--design-border)',
   },
   sectionLast: {
     marginBottom: 0,
@@ -54,7 +54,7 @@ export const designStyles = {
   sectionTitle: {
     fontSize: '11px',
     fontWeight: 500,
-    color: '#1A1A1A',
+    color: 'var(--design-fg)',
     letterSpacing: '0.02em',
     margin: 0,
   },
@@ -67,15 +67,15 @@ export const designStyles = {
   label: {
     display: 'block',
     fontSize: '11px',
-    color: '#6B6861',
+    color: 'var(--design-muted)',
     marginBottom: '4px',
   },
   input: {
     width: '100%',
     background: 'transparent',
-    border: '1px solid #D4D1C9',
+    border: '1px solid var(--design-border)',
     borderRadius: '0px',
-    color: '#1A1A1A',
+    color: 'var(--design-fg)',
     padding: '8px',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     fontSize: '13px',
@@ -85,9 +85,9 @@ export const designStyles = {
   },
   select: {
     background: 'transparent',
-    border: '1px solid #D4D1C9',
+    border: '1px solid var(--design-border)',
     borderRadius: '0px',
-    color: '#1A1A1A',
+    color: 'var(--design-fg)',
     padding: '8px',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     fontSize: '13px',
@@ -97,10 +97,10 @@ export const designStyles = {
   },
   selectSmall: {
     background: 'transparent',
-    border: '1px solid #D4D1C9',
+    border: '1px solid var(--design-border)',
     borderRadius: '0px',
-    color: '#1A1A1A',
-    padding: '2px 6px',
+    color: 'var(--design-fg)',
+    padding: '4px 8px',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     fontSize: '11px',
     appearance: 'none',
@@ -116,39 +116,39 @@ export const designStyles = {
   targetDistField: { flex: 1 },
   targetSum: {
     fontSize: '11px',
-    color: '#6B6861',
+    color: 'var(--design-muted)',
     padding: '8px 0',
     whiteSpace: 'nowrap',
   },
   itemListHeader: {
     display: 'grid',
-    gridTemplateColumns: '40px 100px 100px 60px 1fr 60px',
+    gridTemplateColumns: '36px 90px 90px 56px 1fr 56px',
     gap: '8px',
     paddingBottom: '8px',
-    borderBottom: '1px solid #D4D1C9',
+    borderBottom: '1px solid var(--design-border)',
     fontSize: '11px',
-    color: '#6B6861',
+    color: 'var(--design-muted)',
     marginBottom: '8px',
   },
   itemRow: {
     display: 'grid',
-    gridTemplateColumns: '40px 100px 100px 60px 1fr 60px',
+    gridTemplateColumns: '36px 90px 90px 56px 1fr 56px',
     gap: '8px',
     alignItems: 'center',
-    padding: '4px 0',
+    padding: '6px 0',
     borderBottom: '1px solid transparent',
   },
-  cellId: { fontSize: '11px', color: '#6B6861' },
+  cellId: { fontSize: '11px', color: 'var(--design-muted)' },
   rowActions: { display: 'flex', gap: '4px', opacity: 0.3, transition: 'opacity 0.2s' },
   rowActionsHover: { display: 'flex', gap: '4px', opacity: 1, transition: 'opacity 0.2s' },
   sliderContainer: { display: 'flex', alignItems: 'center', gap: '8px' },
   sliderValue: { fontSize: '11px', width: '30px', textAlign: 'right' },
   button: {
     background: 'transparent',
-    border: '1px solid #D4D1C9',
-    color: '#1A1A1A',
+    border: '1px solid var(--design-border)',
+    color: 'var(--design-fg)',
     borderRadius: '0px',
-    padding: '6px 12px',
+    padding: '8px 12px',
     fontSize: '11px',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     cursor: 'pointer',
@@ -157,7 +157,7 @@ export const designStyles = {
     background: 'transparent',
     border: 'none',
     padding: '0',
-    color: '#6B6861',
+    color: 'var(--design-muted)',
     fontSize: '11px',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
     cursor: 'pointer',
@@ -165,8 +165,8 @@ export const designStyles = {
   btnPrimary: {
     display: 'block',
     width: '100%',
-    backgroundColor: '#1A1A1A',
-    color: '#EBE8E3',
+    backgroundColor: 'var(--design-bg-inverted)',
+    color: 'var(--design-fg-inverted)',
     border: 'none',
     padding: '16px',
     fontSize: '14px',
@@ -183,12 +183,12 @@ export const designStyles = {
     marginTop: '8px',
   },
   scoreCard: {
-    border: '1px solid #D4D1C9',
+    border: '1px solid var(--design-border)',
     padding: '16px',
     display: 'flex',
     flexDirection: 'column',
   },
-  scoreLabel: { fontSize: '11px', color: '#6B6861', marginBottom: '4px' },
+  scoreLabel: { fontSize: '11px', color: 'var(--design-muted)', marginBottom: '4px' },
   scoreValue: { fontSize: '18px', fontWeight: 500 },
   table: {
     width: '100%',
@@ -197,64 +197,64 @@ export const designStyles = {
     marginBottom: '16px',
   },
   th: {
-    border: '1px solid #D4D1C9',
-    padding: '6px 8px',
+    border: '1px solid var(--design-border)',
+    padding: '8px 10px',
     textAlign: 'center',
     fontWeight: 'normal',
-    color: '#6B6861',
+    color: 'var(--design-muted)',
   },
   td: {
-    border: '1px solid #D4D1C9',
-    padding: '6px 8px',
+    border: '1px solid var(--design-border)',
+    padding: '8px 10px',
     textAlign: 'right',
   },
   tdCenter: {
-    border: '1px solid #D4D1C9',
-    padding: '6px 8px',
+    border: '1px solid var(--design-border)',
+    padding: '8px 10px',
     textAlign: 'center',
   },
   tdLeft: {
-    border: '1px solid #D4D1C9',
-    padding: '6px 8px',
+    border: '1px solid var(--design-border)',
+    padding: '8px 10px',
     textAlign: 'left',
   },
   alertList: { display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' },
   alertError: {
     padding: '8px 16px',
     fontSize: '13px',
-    border: '1px solid #1A1A1A',
+    border: '1px solid var(--design-bg-inverted)',
     display: 'flex',
     alignItems: 'flex-start',
-    backgroundColor: '#1A1A1A',
-    color: '#EBE8E3',
+    backgroundColor: 'var(--design-bg-inverted)',
+    color: 'var(--design-fg-inverted)',
   },
   alertWarning: {
     padding: '8px 16px',
     fontSize: '13px',
-    border: '1px solid #1A1A1A',
+    border: '1px solid var(--design-fg)',
     display: 'flex',
     alignItems: 'flex-start',
-    color: '#1A1A1A',
+    color: 'var(--design-fg)',
   },
   alertInfo: {
     padding: '8px 16px',
     fontSize: '13px',
-    border: '1px solid #D4D1C9',
+    border: '1px solid var(--design-border)',
     display: 'flex',
     alignItems: 'flex-start',
-    color: '#6B6861',
+    color: 'var(--design-muted)',
   },
   inlineWarning: {
     fontSize: '11px',
-    color: '#1A1A1A',
-    borderLeft: '2px solid #1A1A1A',
+    color: 'var(--design-fg)',
+    borderLeft: '2px solid var(--design-fg)',
     paddingLeft: '8px',
     marginTop: '8px',
   },
-  textMuted: { color: '#6B6861' },
+  textMuted: { color: 'var(--design-muted)' },
   textSmall: { fontSize: '11px' },
   navLink: {
-    color: '#6B6861',
+    color: 'var(--design-muted)',
     textDecoration: 'none',
     fontSize: '11px',
     cursor: 'pointer',
@@ -279,7 +279,7 @@ export const globalDesignCSS = `
         -webkit-appearance: none;
         height: 12px;
         width: 6px;
-        background: #1A1A1A;
+        background: var(--design-fg);
         cursor: pointer;
         margin-top: -5px;
         border-radius: 0px;
@@ -288,9 +288,9 @@ export const globalDesignCSS = `
         width: 100%;
         height: 1px;
         cursor: pointer;
-        background: #D4D1C9;
+        background: var(--design-border);
       }
-      input:focus { border-color: #1A1A1A !important; }
-      select:focus { border-color: #1A1A1A !important; }
+      input:focus { border-color: var(--design-fg) !important; }
+      select:focus { border-color: var(--design-fg) !important; }
       button.btn-primary-hover:hover { opacity: 0.9; }
     `;

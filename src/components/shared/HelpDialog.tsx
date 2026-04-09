@@ -25,22 +25,22 @@ const sectionStyle: React.CSSProperties = {
 const sectionTitleStyle: React.CSSProperties = {
   fontSize: '11px',
   fontWeight: 500,
-  color: '#1A1A1A',
+  color: 'var(--design-fg)',
   marginBottom: '6px',
   letterSpacing: '0.02em',
 };
 
 const sectionContentStyle: React.CSSProperties = {
   fontSize: '12px',
-  color: '#6B6861',
+  color: 'var(--design-muted)',
   lineHeight: '1.65',
   whiteSpace: 'pre-line',
 };
 
 const scrollPanelStyle: React.CSSProperties = {
-  maxHeight: '360px',
+  maxHeight: '420px',
   overflowY: 'auto',
-  paddingRight: '4px',
+  paddingRight: '8px',
 };
 
 export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
@@ -105,14 +105,14 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                   style={{
                     ...sectionStyle,
                     paddingBottom: '16px',
-                    borderBottom: i < helpContent.faq.items.length - 1 ? '1px solid #D4D1C9' : 'none',
+                    borderBottom: i < helpContent.faq.items.length - 1 ? '1px solid var(--design-border)' : 'none',
                   }}
                 >
                   <p
                     style={{
                       fontSize: '12px',
                       fontWeight: 600,
-                      color: '#1A1A1A',
+                      color: 'var(--design-fg)',
                       marginBottom: '6px',
                     }}
                   >
@@ -143,7 +143,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                       key={i}
                       style={{
                         fontSize: '12px',
-                        color: '#6B6861',
+                        color: 'var(--design-muted)',
                         lineHeight: '1.65',
                         paddingLeft: '12px',
                         position: 'relative',
@@ -153,7 +153,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                         style={{
                           position: 'absolute',
                           left: 0,
-                          color: '#D4D1C9',
+                          color: 'var(--design-border)',
                         }}
                       >
                         —

@@ -21,13 +21,13 @@ export function DesignItemRow({ item, onUpdate, onDelete, onDuplicate }: DesignI
 
   return (
     <div
-      style={{ ...designStyles.itemRow, borderBottomColor: hovered ? '#D4D1C9' : 'transparent' } as React.CSSProperties}
+      style={{ ...designStyles.itemRow, borderBottomColor: hovered ? 'var(--design-border)' : 'transparent' } as React.CSSProperties}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <div style={designStyles.cellId as React.CSSProperties}>{item.id}</div>
       <select
-        style={{ ...designStyles.select, padding: '4px 6px', fontSize: '11px' } as React.CSSProperties}
+        style={{ ...designStyles.select, padding: '6px 8px', fontSize: '11px' } as React.CSSProperties}
         value={item.type}
         onChange={(e) => onUpdate('type', e.target.value)}
       >
@@ -35,7 +35,7 @@ export function DesignItemRow({ item, onUpdate, onDelete, onDuplicate }: DesignI
         <option>서답형</option>
       </select>
       <select
-        style={{ ...designStyles.select, padding: '4px 6px', fontSize: '11px' } as React.CSSProperties}
+        style={{ ...designStyles.select, padding: '6px 8px', fontSize: '11px' } as React.CSSProperties}
         value={item.difficulty}
         onChange={(e) => onUpdate('difficulty', e.target.value)}
       >
@@ -45,7 +45,7 @@ export function DesignItemRow({ item, onUpdate, onDelete, onDuplicate }: DesignI
       </select>
       <input
         type="number"
-        style={{ ...designStyles.input, padding: '4px 6px', fontSize: '11px' } as React.CSSProperties}
+        style={{ ...designStyles.input, padding: '6px 8px', fontSize: '11px' } as React.CSSProperties}
         value={item.score}
         onChange={(e) => onUpdate('score', Number(e.target.value))}
       />

@@ -16,7 +16,7 @@ interface SettingsDialogProps {
 const sectionStyle: CSSProperties = {
   paddingBottom: '20px',
   marginBottom: '20px',
-  borderBottom: '1px solid #D4D1C9',
+  borderBottom: '1px solid var(--design-border)',
 };
 
 const sectionLastStyle: CSSProperties = {
@@ -38,15 +38,15 @@ const helperTextStyle: CSSProperties = {
 
 const themeButtonStyle = (active: boolean): CSSProperties => ({
   ...designStyles.button,
-  backgroundColor: active ? '#1A1A1A' : 'transparent',
-  color: active ? '#EBE8E3' : '#1A1A1A',
+  backgroundColor: active ? 'var(--design-bg-inverted)' : 'transparent',
+  color: active ? 'var(--design-fg-inverted)' : 'var(--design-fg)',
   flex: 1,
 });
 
 const dangerButtonStyle: CSSProperties = {
   ...designStyles.button,
-  borderColor: '#1A1A1A',
-  color: '#1A1A1A',
+  borderColor: 'var(--design-fg)',
+  color: 'var(--design-fg)',
 };
 
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
@@ -68,7 +68,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>설정</DialogTitle>
         </DialogHeader>
@@ -139,6 +139,9 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               >
                 5수준(A-E)
               </button>
+            </div>
+            <div style={helperTextStyle}>
+              "5수준+미도달" 선택 시 E/미도달 경계 분할점수가 추가로 표시됩니다. NEIS 입력 표의 열(A~E)은 동일합니다.
             </div>
           </div>
 

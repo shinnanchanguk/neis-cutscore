@@ -20,7 +20,7 @@ const monoStyle: React.CSSProperties = {
 
 const labelStyle: React.CSSProperties = {
   fontSize: '10px',
-  color: '#6B6861',
+  color: 'var(--design-muted)',
   letterSpacing: '0.02em',
   fontWeight: 500,
   marginBottom: '4px',
@@ -29,18 +29,18 @@ const labelStyle: React.CSSProperties = {
 
 const rowStyle: React.CSSProperties = {
   display: 'grid',
-  gridTemplateColumns: '28px 36px 48px 48px 36px',
+  gridTemplateColumns: '32px 40px 52px 52px 40px',
   gap: '4px',
   fontSize: '11px',
-  padding: '2px 0',
-  borderBottom: '1px solid #EBE8E3',
+  padding: '4px 0',
+  borderBottom: '1px solid var(--design-bg)',
 };
 
 const headerRowStyle: React.CSSProperties = {
   ...rowStyle,
-  color: '#6B6861',
+  color: 'var(--design-muted)',
   fontSize: '10px',
-  borderBottom: '1px solid #D4D1C9',
+  borderBottom: '1px solid var(--design-border)',
 };
 
 const valueStyle: React.CSSProperties = {
@@ -69,9 +69,9 @@ export function CellPopover({ explanation, children, open, onOpenChange }: CellP
         style={{
           fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
           fontSize: '12px',
-          color: '#1A1A1A',
-          backgroundColor: '#FAFAF8',
-          border: '1px solid #D4D1C9',
+          color: 'var(--design-fg)',
+          backgroundColor: 'var(--design-surface)',
+          border: '1px solid var(--design-border)',
           borderRadius: 0,
           boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
           padding: '12px',
@@ -83,7 +83,7 @@ export function CellPopover({ explanation, children, open, onOpenChange }: CellP
         </p>
 
         {/* Boundary z */}
-        <p style={{ ...monoStyle, color: '#6B6861', marginBottom: '6px' }}>
+        <p style={{ ...monoStyle, color: 'var(--design-muted)', marginBottom: '6px' }}>
           목표 {gradeLabel} 비율 → z_{gradeLabel} = {explanation.z_k.toFixed(3)}
         </p>
 
@@ -98,7 +98,7 @@ export function CellPopover({ explanation, children, open, onOpenChange }: CellP
         </div>
         {explanation.items.map((item) => (
           <div key={item.number} style={rowStyle}>
-            <span style={{ color: '#6B6861' }}>{item.number}</span>
+            <span style={{ color: 'var(--design-muted)' }}>{item.number}</span>
             <span style={valueStyle}>{item.p_i}%</span>
             <span style={valueStyle}>{item.b_i.toFixed(2)}</span>
             <span style={valueStyle}>{(item.p_ik * 100).toFixed(1)}%</span>
@@ -107,10 +107,10 @@ export function CellPopover({ explanation, children, open, onOpenChange }: CellP
         ))}
 
         {/* Summary */}
-        <p style={{ ...monoStyle, color: '#6B6861', marginTop: '8px' }}>
+        <p style={{ ...monoStyle, color: 'var(--design-muted)', marginTop: '8px' }}>
           배점 가중 평균: {explanation.rawPercent.toFixed(1)}%
         </p>
-        <p style={{ ...monoStyle, color: '#1A1A1A', fontWeight: 600 }}>
+        <p style={{ ...monoStyle, color: 'var(--design-fg)', fontWeight: 600 }}>
           5% 반올림: {explanation.roundedPercent}%
         </p>
       </PopoverContent>

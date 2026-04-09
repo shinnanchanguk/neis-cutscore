@@ -24,14 +24,14 @@ export function FieldTooltip({ content, children }: FieldTooltipProps) {
             border: 'none',
             padding: 0,
             cursor: 'pointer',
-            color: '#6B6861',
+            color: 'var(--design-muted)',
             lineHeight: 1,
           }}
           aria-label="도움말"
         >
           <HelpCircle size={14} />
         </TooltipTrigger>
-        <TooltipContent style={{ maxWidth: '240px', whiteSpace: 'pre-line' }}>
+        <TooltipContent style={{ maxWidth: '280px', whiteSpace: 'pre-line' }}>
           {content}
         </TooltipContent>
       </Tooltip>

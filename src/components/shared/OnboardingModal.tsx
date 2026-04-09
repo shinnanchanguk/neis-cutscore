@@ -51,7 +51,7 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="sm:max-w-md"
+        className="sm:max-w-lg"
         style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
       >
         <DialogHeader>
@@ -61,14 +61,14 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
         </DialogHeader>
 
         {/* Step indicators */}
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '4px' }}>
+        <div style={{ display: 'flex', gap: '6px', marginBottom: '8px' }}>
           {onboardingSteps.map((_, i) => (
             <div
               key={i}
               style={{
                 height: '2px',
                 flex: 1,
-                backgroundColor: i <= step ? '#1A1A1A' : '#D4D1C9',
+                backgroundColor: i <= step ? 'var(--design-fg)' : 'var(--design-border)',
                 transition: 'background-color 0.2s',
               }}
             />
@@ -76,7 +76,7 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
         </div>
 
         {/* Step content with animation */}
-        <div style={{ position: 'relative', minHeight: '120px', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', minHeight: '140px', overflow: 'visible' }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -87,10 +87,10 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
             >
               <p
                 style={{
-                  fontSize: '12px',
+                  fontSize: '13px',
                   fontWeight: 500,
-                  color: '#1A1A1A',
-                  marginBottom: '8px',
+                  color: 'var(--design-fg)',
+                  marginBottom: '10px',
                 }}
               >
                 {current.title}
@@ -98,8 +98,8 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
               <p
                 style={{
                   fontSize: '12px',
-                  color: '#6B6861',
-                  lineHeight: '1.6',
+                  color: 'var(--design-muted)',
+                  lineHeight: '1.7',
                   whiteSpace: 'pre-line',
                 }}
               >
@@ -117,7 +117,7 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
               alignItems: 'center',
               gap: '6px',
               fontSize: '11px',
-              color: '#6B6861',
+              color: 'var(--design-muted)',
               cursor: 'pointer',
             }}
           >
@@ -152,8 +152,8 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
             <button
               style={{
                 ...(designStyles.button as React.CSSProperties),
-                backgroundColor: '#1A1A1A',
-                color: '#EBE8E3',
+                backgroundColor: 'var(--design-bg-inverted)',
+                color: 'var(--design-fg-inverted)',
                 border: 'none',
               }}
               onClick={handleNext}

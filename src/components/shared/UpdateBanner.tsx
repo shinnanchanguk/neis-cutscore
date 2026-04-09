@@ -14,8 +14,8 @@ export function UpdateBanner() {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '8px 24px',
-        backgroundColor: '#1A1A1A',
-        color: '#EBE8E3',
+        backgroundColor: 'var(--design-bg-inverted)',
+        color: 'var(--design-fg-inverted)',
         fontSize: '13px',
         fontFamily: designStyles.root.fontFamily,
         flexShrink: 0,
@@ -23,14 +23,14 @@ export function UpdateBanner() {
     >
       <span>
         새 버전 {info.version}이 있습니다.
-        {info.body && <span style={{ color: '#D4D1C9', marginLeft: 8 }}>{info.body}</span>}
+        {info.body && <span style={{ color: 'var(--design-border)', marginLeft: 8 }}>{info.body}</span>}
       </span>
       <button
         onClick={downloadAndInstall}
         disabled={downloading}
         style={{
-          background: '#EBE8E3',
-          color: '#1A1A1A',
+          background: 'var(--design-bg)',
+          color: 'var(--design-fg)',
           border: 'none',
           padding: '4px 16px',
           fontSize: '12px',

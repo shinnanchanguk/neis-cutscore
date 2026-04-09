@@ -60,7 +60,7 @@ const DEFAULT_META: ExamMeta = {
 const DEFAULT_SETTINGS: ExamSettings = {
   sigma: 15,
   includeE미도달: true,
-  darkMode: 'system',
+  darkMode: 'light',
   onboardingCompleted: false,
 };
 
