@@ -72,7 +72,7 @@ export function HeaderMetaFields() {
               flexShrink: 1,
             } as React.CSSProperties}
           >
-            {'< 입력 안 해도 괜찮아요. 저장·불러오기 구분용입니다.'}
+            {'👉 입력 안 해도 괜찮아요. 저장·불러오기 구분용'}
           </span>
         </div>
     </div>
