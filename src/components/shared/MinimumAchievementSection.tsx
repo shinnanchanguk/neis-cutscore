@@ -19,7 +19,7 @@ export function MinimumAchievementSection() {
     {
       label: '고정 40% 기준',
       value: items.length > 0 ? `${referenceScore}점` : '—',
-      hint: '고정분할점수 기준 참고선',
+      hint: '고정분할점수 기준 40점 참고선',
     },
     {
       label: '추정 E/미도달',
@@ -41,8 +41,8 @@ export function MinimumAchievementSection() {
     <DesignSection title="최소 성취수준 점검" hint="참고용 비교">
       <DesignScoreCards scores={scores} />
       <p style={{ ...designStyles.textSmall, ...designStyles.textMuted, margin: '12px 0 0 0' }}>
-        실제 미도달 판정은 학교가 평가 전에 확정·공지한 최종 E/미도달 분할점수를 기준으로 합니다.
-        고정분할점수라면 보통 40% 선을 바로 쓰고, 추정분할점수라면 과목별 최종 분할점수가 그 역할을 합니다.
+        이 섹션은 고정분할점수의 40점선을 기준으로 보는 참고 비교입니다.
+        실제 미도달 판정은 학교가 최종 확정한 기준을 따를 수 있으니, 여기서는 우선 40점선 점검용으로 보세요.
       </p>
     </DesignSection>
   );

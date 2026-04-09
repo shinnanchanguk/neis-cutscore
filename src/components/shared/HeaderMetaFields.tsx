@@ -16,12 +16,12 @@ const headerFieldStyle: React.CSSProperties = {
   minWidth: 0,
 };
 
-const headerInputStyle: React.CSSProperties = {
-  ...designStyles.input,
+const headerInputStyle = {
+  ...(designStyles.input as React.CSSProperties),
   width: '112px',
   padding: '5px 8px',
   fontSize: '12px',
-};
+} as React.CSSProperties;
 
 export function HeaderMetaFields() {
   const meta = useExamStore((s) => s.meta);
@@ -68,15 +68,11 @@ export function HeaderMetaFields() {
             style={{
               ...designStyles.textSmall,
               ...designStyles.textMuted,
-              lineHeight: 1.25,
-              whiteSpace: 'normal',
-              maxWidth: '118px',
+              whiteSpace: 'nowrap',
               flexShrink: 1,
             } as React.CSSProperties}
           >
-            입력 안 해도 괜찮아요.
-            <br />
-            저장·불러오기 구분용입니다.
+            {'< 입력 안 해도 괜찮아요. 저장·불러오기 구분용입니다.'}
           </span>
         </div>
     </div>

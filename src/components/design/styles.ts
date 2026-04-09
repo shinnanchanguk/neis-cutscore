@@ -21,7 +21,7 @@ export const designStyles = {
   },
   appHeaderLeft: { display: 'flex', alignItems: 'flex-start', gap: '16px', minWidth: 0, flex: 1 },
   appHeaderH1: { fontSize: '16px', fontWeight: 500, letterSpacing: '-0.02em', margin: 0, whiteSpace: 'nowrap' },
-  appHeaderNav: { display: 'flex', gap: '16px', paddingTop: '2px', flexShrink: 0 },
+  appHeaderNav: { display: 'flex', gap: '16px', alignItems: 'center', alignSelf: 'center', flexShrink: 0 },
   appMain: { display: 'flex', flex: 1, overflow: 'hidden' },
   paneLeft: {
     flex: 55,
@@ -277,7 +277,8 @@ export const designStyles = {
     background: 'none',
     border: 'none',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-    padding: 0,
+    padding: '2px 0',
+    lineHeight: 1.2,
   },
 };
 

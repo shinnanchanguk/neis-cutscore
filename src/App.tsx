@@ -25,12 +25,20 @@ function AppHeader() {
       <header style={designStyles.appHeader as React.CSSProperties}>
         <div style={designStyles.appHeaderLeft as React.CSSProperties}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' } as React.CSSProperties}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px' } as React.CSSProperties}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px' } as React.CSSProperties}>
               <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>NEIS 분할점수 계산기</h1>
               <span
                 role="link"
                 tabIndex={0}
-                style={{ ...designStyles.textSmall, ...designStyles.textMuted, textDecoration: 'none', cursor: 'pointer', whiteSpace: 'nowrap' } as React.CSSProperties}
+                style={{
+                  ...designStyles.textSmall,
+                  ...designStyles.textMuted,
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  fontFamily: '"Brush Script MT", "Segoe Script", cursive',
+                  fontSize: '14px',
+                } as React.CSSProperties}
                 onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
                 onClick={async () => {

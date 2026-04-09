@@ -341,22 +341,23 @@ describe('E/미도달 cutoff when includeE미도달 = true', () => {
   const items: Item[] = [
     { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 50, expectedRate: 60 },
   ];
+  const options = { includeE미도달: true, expectedUnmetRate: 5 };
 
   it('no E_미도달 cells exist — only A through E', () => {
-    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    const output = computeNeisOutput(items, PRESETS['일반고'], options);
     const grades = output.cells.map(c => c.grade);
     expect(grades).not.toContain('E_미도달');
     expect(grades).toEqual(['A', 'B', 'C', 'D', 'E']);
   });
 
   it('cell count equals (number of difficulties × 5) with no extra columns', () => {
-    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    const output = computeNeisOutput(items, PRESETS['일반고'], options);
     const difficultyCount = new Set(output.cells.map(c => c.difficulty)).size;
     expect(output.cells).toHaveLength(difficultyCount * 5);
   });
 
   it('E미도달 cut score is computed from E column values (not D*0.5)', () => {
-    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    const output = computeNeisOutput(items, PRESETS['일반고'], options);
     expect(output.cutScores.E미도달).toBeDefined();
     // E미도달 cutoff = sum(categoryPoints * E_cell_value / 100)
     const eCell = output.cells.find(c => c.grade === 'E' && c.difficulty === '보통');
@@ -366,7 +367,7 @@ describe('E/미도달 cutoff when includeE미도달 = true', () => {
   });
 
   it('no arbitrary D*0.5 rule exists — E values are Rasch-computed', () => {
-    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    const output = computeNeisOutput(items, PRESETS['일반고'], options);
     const dCell = output.cells.find(c => c.grade === 'D' && c.difficulty === '보통');
     const eCell = output.cells.find(c => c.grade === 'E' && c.difficulty === '보통');
     // E value should NOT be D * 0.5 rounded to 5
@@ -384,9 +385,17 @@ describe('E/미도달 cutoff when includeE미도달 = true', () => {
   });
 
   it('E미도달 cutoff stays below or equal to D/E cutoff', () => {
-    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    const output = computeNeisOutput(items, PRESETS['일반고'], options);
     expect(output.cutScores.E미도달).toBeDefined();
     expect(output.cutScores.E미도달!).toBeLessThanOrEqual(output.cutScores.DE);
+  });
+
+  it('higher expectedUnmetRate raises the E cutoff', () => {
+    const lower = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true, expectedUnmetRate: 0 });
+    const higher = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true, expectedUnmetRate: 5 });
+    expect(lower.cutScores.E미도달).toBeDefined();
+    expect(higher.cutScores.E미도달).toBeDefined();
+    expect(higher.cutScores.E미도달!).toBeGreaterThan(lower.cutScores.E미도달!);
   });
 });
 
@@ -423,28 +432,25 @@ describe('explainCell', () => {
     }
   });
 
-  it('E column explanation uses a lower boundary than D and stays above the extreme tail clamp', () => {
-    const explanationE = explainCell('보통', 'E', items, PRESETS['일반고']);
-    const explanationD = explainCell('보통', 'D', items, PRESETS['일반고']);
-    // E should stay below D, but it should be criterion-based rather than forced to -3.
+  it('E column explanation uses the expected unmet-rate quantile', () => {
+    const explanationE = explainCell('보통', 'E', items, PRESETS['일반고'], {
+      includeE미도달: true,
+      expectedUnmetRate: 5,
+    });
+    expect(explanationE.z_k).toBeCloseTo(PhiInv(0.05), 2);
+  });
+
+  it('E column explanation stays below D when includeE미도달 is enabled', () => {
+    const explanationE = explainCell('보통', 'E', items, PRESETS['일반고'], {
+      includeE미도달: true,
+      expectedUnmetRate: 5,
+    });
+    const explanationD = explainCell('보통', 'D', items, PRESETS['일반고'], {
+      includeE미도달: true,
+      expectedUnmetRate: 5,
+    });
     expect(explanationE.z_k).toBeLessThan(explanationD.z_k);
     expect(explanationE.z_k).toBeGreaterThan(-3.0);
-  });
-
-  it('E column explanation aligns with the 40% minimum achievement criterion', () => {
-    const explanation = explainCell('보통', 'E', items, PRESETS['일반고']);
-    const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
-    const expectedScore = explanation.items.reduce((sum, item) => sum + item.p_ik * item.points, 0);
-    expect(expectedScore / totalPoints).toBeCloseTo(0.4, 2);
-  });
-
-  it('E미도달 cut score stays near 40% of total points', () => {
-    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
-    expect(output.cutScores.E미도달).toBeDefined();
-    const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
-    const reference = totalPoints * 0.4;
-    expect(output.cutScores.E미도달!).toBeGreaterThanOrEqual(reference - 5);
-    expect(output.cutScores.E미도달!).toBeLessThanOrEqual(reference + 5);
   });
 });
 
@@ -482,5 +488,18 @@ describe('Validate: ALL_HIGH_RATE', () => {
     ];
     const output = computeNeisOutput(items, PRESETS['일반고']);
     expect(output.warnings.some(w => w.code === 'ALL_HIGH_RATE')).toBe(true);
+  });
+});
+
+describe('Validate: UNMET_RATE_ZERO', () => {
+  it('reports warning when includeE미도달 is enabled and expectedUnmetRate is 0', () => {
+    const items: Item[] = [
+      { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 10, expectedRate: 60 },
+    ];
+    const output = computeNeisOutput(items, PRESETS['일반고'], {
+      includeE미도달: true,
+      expectedUnmetRate: 0,
+    });
+    expect(output.warnings.some(w => w.code === 'UNMET_RATE_ZERO')).toBe(true);
   });
 });
