@@ -127,12 +127,19 @@ jobs:
           includeUpdaterJson: false
           args: ${{ matrix.args }}
 
+      - name: Find and upload sig files
+        shell: bash
+        run: |
+          mkdir -p sig-upload
+          find src-tauri/target -name "*.sig" -type f -exec cp {} sig-upload/ \; 2>/dev/null || true
+          echo "Found sig files:"
+          ls -la sig-upload/ 2>/dev/null || echo "none"
+
       - name: Upload sig files as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sigs-${{ matrix.platform }}-${{ strategy.job-index }}
-          path: |
-            src-tauri/target/release/bundle/**/*.sig
+          path: sig-upload/
           if-no-files-found: ignore
 
   # Step 3: Publish to both repos
