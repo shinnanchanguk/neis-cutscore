@@ -1,3 +1,4 @@
+// NEIS 분할점수 계산기 도움말 콘텐츠
 export const helpContent = {
   concepts: {
     title: '개념 설명',
