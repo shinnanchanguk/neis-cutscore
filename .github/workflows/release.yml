@@ -124,31 +124,8 @@ jobs:
         with:
           releaseId: ${{ needs.version-and-tag.outputs.release_id }}
           updaterJsonPreferNsis: true
-          includeUpdaterJson: false
+          includeUpdaterJson: true
           args: ${{ matrix.args }}
-
-      - name: Find and upload sig files
-        shell: python3 {0}
-        run: |
-          import os, shutil, glob
-          os.makedirs('sig-upload', exist_ok=True)
-          count = 0
-          for root, dirs, files in os.walk('src-tauri/target'):
-            for f in files:
-              if f.endswith('.sig'):
-                src = os.path.join(root, f)
-                dst = os.path.join('sig-upload', f)
-                shutil.copy2(src, dst)
-                print(f'Copied: {src} -> {dst}')
-                count += 1
-          print(f'Total sig files: {count}')
-
-      - name: Upload sig files as artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: sigs-${{ matrix.platform }}-${{ strategy.job-index }}
-          path: sig-upload/
-          if-no-files-found: ignore
 
   # Step 3: Publish to both repos
   publish-release:
@@ -170,17 +147,12 @@ jobs:
               draft: false,
             });
 
-      - name: Download sig artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: sig-artifacts
-          pattern: sigs-*
-          merge-multiple: true
-
-      - name: Download private release assets
+      - name: Download private release assets and fix latest.json URLs
         uses: actions/github-script@v7
         env:
           release_id: ${{ needs.version-and-tag.outputs.release_id }}
+          PUBLIC_REPO: shinnanchanguk/neis-cutscore-releases
+          VERSION: ${{ needs.version-and-tag.outputs.new_version }}
         with:
           script: |
             const fs = require('fs');
@@ -202,82 +174,21 @@ jobs:
                 asset_id: asset.id,
                 headers: { accept: 'application/octet-stream' },
               });
-              fs.writeFileSync(
-                path.join(dir, asset.name),
-                Buffer.from(response.data)
-              );
+              fs.writeFileSync(path.join(dir, asset.name), Buffer.from(response.data));
             }
 
-      - name: Generate latest.json for updater
-        uses: actions/github-script@v7
-        env:
-          VERSION: ${{ needs.version-and-tag.outputs.new_version }}
-          REPO: shinnanchanguk/neis-cutscore-releases
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-            const version = process.env.VERSION;
-            const repo = process.env.REPO;
-            const assetDir = 'release-assets';
-            const sigDir = 'sig-artifacts';
-            const baseUrl = `https://github.com/${repo}/releases/download/v${version}`;
-            const assets = fs.readdirSync(assetDir);
-
-            // Recursively find all .sig files from artifacts
-            function findSigFiles(dir) {
-              const results = [];
-              if (!fs.existsSync(dir)) return results;
-              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-                const full = path.join(dir, entry.name);
-                if (entry.isDirectory()) results.push(...findSigFiles(full));
-                else if (entry.name.endsWith('.sig')) results.push(full);
-              }
-              return results;
+            // Fix latest.json URLs: replace private repo URLs with public repo URLs
+            const latestPath = path.join(dir, 'latest.json');
+            if (fs.existsSync(latestPath)) {
+              let content = fs.readFileSync(latestPath, 'utf8');
+              const privateUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}`;
+              const publicUrl = `https://github.com/${process.env.PUBLIC_REPO}`;
+              content = content.replaceAll(privateUrl, publicUrl);
+              fs.writeFileSync(latestPath, content);
+              console.log('Fixed latest.json:', content);
+            } else {
+              console.log('WARNING: latest.json not found in release assets');
             }
-            const sigFiles = findSigFiles(sigDir);
-            console.log('Found sig files:', sigFiles.map(f => path.basename(f)));
-
-            const readSig = (keyword) => {
-              const f = sigFiles.find(s => path.basename(s).includes(keyword));
-              return f ? fs.readFileSync(f, 'utf8').trim() : '';
-            };
-
-            const findAsset = (keyword) => assets.find(a => a.includes(keyword) && !a.endsWith('.sig'));
-
-            const now = new Date().toISOString();
-            const latest = { version: `v${version}`, notes: `v${version}`, pub_date: now, platforms: {} };
-
-            // Windows (NSIS)
-            const nsisZipSig = readSig('nsis.zip.sig');
-            const nsisExe = findAsset('x64-setup.exe');
-            if (nsisZipSig && nsisExe) {
-              latest.platforms['windows-x86_64'] = { signature: nsisZipSig, url: `${baseUrl}/${nsisExe}` };
-            }
-
-            // macOS ARM
-            const macArmSig = readSig('aarch64.app.tar.gz.sig');
-            const macArm = findAsset('aarch64.app.tar.gz');
-            if (macArmSig && macArm) {
-              latest.platforms['darwin-aarch64'] = { signature: macArmSig, url: `${baseUrl}/${macArm}` };
-            }
-
-            // macOS Intel
-            const macX64Sig = readSig('x64.app.tar.gz.sig');
-            const macX64 = findAsset('x64.app.tar.gz');
-            if (macX64Sig && macX64) {
-              latest.platforms['darwin-x86_64'] = { signature: macX64Sig, url: `${baseUrl}/${macX64}` };
-            }
-
-            // Linux
-            const linuxSig = readSig('AppImage.sig');
-            const linuxApp = findAsset('AppImage');
-            if (linuxSig && linuxApp) {
-              latest.platforms['linux-x86_64'] = { signature: linuxSig, url: `${baseUrl}/${linuxApp}` };
-            }
-
-            console.log('latest.json:', JSON.stringify(latest, null, 2));
-            fs.writeFileSync(path.join(assetDir, 'latest.json'), JSON.stringify(latest, null, 2));
 
       - name: Publish to public releases repo
         uses: softprops/action-gh-release@v2
