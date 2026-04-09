@@ -3,6 +3,7 @@ import { DesignLayout } from '@/components/design';
 import { LeftPane } from '@/components/shared/LeftPane';
 import { RightPane } from '@/components/shared/RightPane';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from '@/components/ui/sonner';
 import { OnboardingModal } from '@/components/shared/OnboardingModal';
 import { HelpDialog } from '@/components/shared/HelpDialog';
 import { SettingsDialog } from '@/components/shared/SettingsDialog';
@@ -56,6 +57,7 @@ function App() {
         open={showOnboarding}
         onOpenChange={setShowOnboarding}
       />
+      <Toaster />
     </TooltipProvider>
   );
 }

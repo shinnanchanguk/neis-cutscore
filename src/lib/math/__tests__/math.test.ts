@@ -326,9 +326,10 @@ describe('Edge: all same difficulty', () => {
     expect(difficulties[0]).toBe('보통');
   });
 
-  it('still has 4 grade cells (A, B, C, D)', () => {
+  it('still has 6 grade cells (A, B, C, D, E + E_미도달, since includeE미도달 defaults to true)', () => {
     const output = computeNeisOutput(items, PRESETS['일반고']);
-    expect(output.cells).toHaveLength(4);
+    // 5 grade boundary cells (A–E) + 1 E_미도달 cell = 6
+    expect(output.cells).toHaveLength(6);
   });
 
   it('values are multiples of 5', () => {

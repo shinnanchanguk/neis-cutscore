@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { useExamStore } from '@/store/examStore';
 import { designStyles } from '@/components/design/styles';
 import { saveProjectAs, saveProjectToPath, openProject, openProjectFromPath, getRecentFiles } from '@/lib/storage';
@@ -31,21 +32,31 @@ export function FileMenu() {
 
   const handleSave = async () => {
     const project = store.exportProject();
-    if (currentFilePath) {
-      await saveProjectToPath(currentFilePath, project);
-    } else {
-      const path = await saveProjectAs(project);
-      if (path) {
-        useExamStore.setState({ currentFilePath: path });
+    try {
+      if (currentFilePath) {
+        await saveProjectToPath(currentFilePath, project);
+      } else {
+        const path = await saveProjectAs(project);
+        if (path) {
+          useExamStore.setState({ currentFilePath: path });
+        }
       }
+      toast.success('저장 완료');
+    } catch {
+      toast.error('저장 실패');
     }
   };
 
   const handleSaveAs = async () => {
     const project = store.exportProject();
-    const path = await saveProjectAs(project);
-    if (path) {
-      useExamStore.setState({ currentFilePath: path });
+    try {
+      const path = await saveProjectAs(project);
+      if (path) {
+        useExamStore.setState({ currentFilePath: path });
+        toast.success('저장 완료');
+      }
+    } catch {
+      toast.error('저장 실패');
     }
   };
 

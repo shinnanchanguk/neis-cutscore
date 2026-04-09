@@ -2,7 +2,7 @@ import React from 'react';
 import { designStyles } from './styles';
 
 interface DesignSectionProps {
-  title: string;
+  title: React.ReactNode;
   hint?: string;
   actions?: React.ReactNode;
   isLast?: boolean;

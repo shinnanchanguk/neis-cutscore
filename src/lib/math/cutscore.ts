@@ -30,11 +30,14 @@ function computeBoundaryZ(target: TargetDistribution): Record<string, number> {
   const cumABC = (target.A + target.B + target.C) / 100;
   const cumABCD = (target.A + target.B + target.C + target.D) / 100;
 
+  const cumABCDE = (target.A + target.B + target.C + target.D + target.E) / 100;
+
   return {
     AB: clamp(PhiInv(1 - cumA), -3, 3),
     BC: clamp(PhiInv(1 - cumAB), -3, 3),
     CD: clamp(PhiInv(1 - cumABC), -3, 3),
     DE: clamp(PhiInv(1 - cumABCD), -3, 3),
+    E: clamp(PhiInv(1 - cumABCDE), -3, 3),
   };
 }
 
@@ -47,7 +50,7 @@ export function computeNeisOutput(
   options: ComputeOptions = {}
 ): NeisOutput {
   const sigma = options.sigma ?? 15;
-  const includeE미도달 = options.includeE미도달 ?? false;
+  const includeE미도달 = options.includeE미도달 ?? true;
 
   // Handle empty items case
   if (items.length === 0) {
@@ -69,6 +72,7 @@ export function computeNeisOutput(
     { grade: 'B', z: boundaryZ.BC },
     { grade: 'C', z: boundaryZ.CD },
     { grade: 'D', z: boundaryZ.DE },
+    { grade: 'E', z: boundaryZ.E },
   ];
 
   // 2. Group items by difficulty

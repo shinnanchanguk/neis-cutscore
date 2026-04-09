@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { DesignSection, DesignAlerts, DesignCopyButton } from '@/components/design';
 import { useNeisOutput } from '@/hooks/useNeisOutput';
 import { copyToNeisFormat } from '@/lib/clipboard';
@@ -17,8 +18,9 @@ export function AlertsSection() {
       await copyToNeisFormat(output.cells);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      toast.success('복사 완료!');
     } catch {
-      // clipboard write failed silently
+      toast.error('복사 실패. 클립보드 권한을 확인하세요.');
     }
   };
 

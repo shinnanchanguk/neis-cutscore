@@ -9,6 +9,8 @@ import type { CellExplanation } from '@/lib/types';
 interface CellPopoverProps {
   explanation: CellExplanation | null;
   children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const monoStyle: React.CSSProperties = {
@@ -46,7 +48,7 @@ const valueStyle: React.CSSProperties = {
   fontFamily: 'monospace',
 };
 
-export function CellPopover({ explanation, children }: CellPopoverProps) {
+export function CellPopover({ explanation, children, open, onOpenChange }: CellPopoverProps) {
   if (!explanation) {
     return <>{children}</>;
   }
@@ -55,7 +57,7 @@ export function CellPopover({ explanation, children }: CellPopoverProps) {
   const categoryLabel = explanation.category;
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger
         style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
         aria-label={`${categoryLabel} × ${gradeLabel} 셀 상세`}

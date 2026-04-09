@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { DesignSection, DesignNeisTable } from '@/components/design';
 import { useExamStore } from '@/store/examStore';
 import { useNeisOutput } from '@/hooks/useNeisOutput';
-import type { Difficulty, ItemType } from '@/lib/types';
+import { CellPopover } from '@/components/shared/CellPopover';
+import { explainCell } from '@/lib/math/cutscore';
+import type { Difficulty, ItemType, Grade, CellExplanation } from '@/lib/types';
 
 type GroupKey = `${ItemType}|${Difficulty}`;
 
@@ -11,8 +13,10 @@ const GRADES = ['A', 'B', 'C', 'D', 'E'];
 
 export function NeisTableSection() {
   const items = useExamStore((s) => s.items);
+  const targetDistribution = useExamStore((s) => s.targetDistribution);
   const output = useNeisOutput();
   const [mode, setMode] = useState('5수준(A-E) + 미도달');
+  const [cellExplanation, setCellExplanation] = useState<CellExplanation | null>(null);
 
   // Group items by (type + difficulty)
   const groupMap = new Map<GroupKey, { type: ItemType; difficulty: Difficulty; numbers: number[]; totalPoints: number }>();
@@ -66,6 +70,21 @@ export function NeisTableSection() {
     };
   });
 
+  const handleCellClick = (groupIndex: number, grade: string) => {
+    // Only explain A-E boundary grades (not E_미도달)
+    const validGrades: Grade[] = ['A', 'B', 'C', 'D', 'E'];
+    if (!validGrades.includes(grade as Grade)) return;
+    const group = sortedGroups[groupIndex];
+    if (!group) return;
+    const explanation = explainCell(
+      group.difficulty,
+      grade as Grade,
+      items,
+      targetDistribution,
+    );
+    setCellExplanation(explanation);
+  };
+
   return (
     <DesignSection title="NEIS 입력 표">
       <DesignNeisTable
@@ -75,7 +94,17 @@ export function NeisTableSection() {
         onModeChange={setMode}
         groups={groups}
         grades={GRADES}
+        onCellClick={handleCellClick}
       />
+      {/* CellPopover is rendered as a controlled popover. The trigger is a hidden span;
+          open state is driven by cellExplanation state set via onCellClick. */}
+      <CellPopover
+        explanation={cellExplanation}
+        open={cellExplanation !== null}
+        onOpenChange={(open) => { if (!open) setCellExplanation(null); }}
+      >
+        <span aria-hidden="true" style={{ display: 'inline-block', width: 0, height: 0 }} />
+      </CellPopover>
     </DesignSection>
   );
 }

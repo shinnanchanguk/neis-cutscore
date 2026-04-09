@@ -1,5 +1,7 @@
 import { DesignSection, DesignItemList } from '@/components/design';
 import { useExamStore } from '@/store/examStore';
+import { FieldTooltip } from '@/components/shared/FieldTooltip';
+import { fieldTooltips } from '@/content/help';
 import type { Difficulty, ItemType } from '@/lib/types';
 
 export function ItemListSection() {
@@ -46,8 +48,14 @@ export function ItemListSection() {
     if (item) duplicateItem(item.id);
   };
 
+  const titleWithTooltip = (
+    <FieldTooltip content={fieldTooltips.expectedRate}>
+      문항 목록
+    </FieldTooltip>
+  );
+
   return (
-    <DesignSection title="문항 목록" isLast>
+    <DesignSection title={titleWithTooltip} isLast>
       <DesignItemList
         items={designItems}
         totalScore={totalScore}
