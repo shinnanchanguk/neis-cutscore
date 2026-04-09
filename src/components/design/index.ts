@@ -8,6 +8,5 @@ export { DesignItemRow } from './DesignItemRow';
 export { DesignItemList } from './DesignItemList';
 export { DesignScoreCards } from './DesignScoreCards';
 export { DesignNeisTable } from './DesignNeisTable';
-export { DesignComparisonTable } from './DesignComparisonTable';
 export { DesignAlerts } from './DesignAlerts';
 export { DesignCopyButton } from './DesignCopyButton';

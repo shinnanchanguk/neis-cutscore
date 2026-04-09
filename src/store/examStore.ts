@@ -4,7 +4,6 @@ import type { ExamMeta, ExamProject, Grade, Item, PresetName, TargetDistribution
 import { PRESETS } from '@/lib/presets';
 
 interface ExamSettings {
-  sigma: number;
   includeE미도달: boolean;
   darkMode: 'system' | 'light' | 'dark';
   onboardingCompleted: boolean;
@@ -58,7 +57,6 @@ const DEFAULT_META: ExamMeta = {
 };
 
 const DEFAULT_SETTINGS: ExamSettings = {
-  sigma: 15,
   includeE미도달: true,
   darkMode: 'light',
   onboardingCompleted: false,
@@ -179,7 +177,6 @@ export const useExamStore = create<ExamState>()(
           items: renumber(project.items),
           settings: {
             ...DEFAULT_SETTINGS,
-            sigma: project.settings.sigma,
             includeE미도달: project.settings.includeE미도달,
           },
           presetName: '사용자정의',
@@ -195,7 +192,6 @@ export const useExamStore = create<ExamState>()(
           targetDistribution: state.targetDistribution,
           items: state.items,
           settings: {
-            sigma: state.settings.sigma,
             includeE미도달: state.settings.includeE미도달,
           },
           createdAt: now,

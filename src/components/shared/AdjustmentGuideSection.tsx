@@ -23,12 +23,16 @@ export function AdjustmentGuideSection() {
   const hardExpectedRate = hardPoints > 0
     ? hardItems.reduce((sum, item) => sum + item.points * item.expectedRate, 0) / hardPoints
     : 0;
+  const eCut = output.cutScores.E미도달;
 
   const reasons: string[] = [];
   const actions: string[] = [];
 
-  if (output.cutScores.DE < 40) {
-    reasons.push(`D/E가 ${output.cutScores.DE}점으로 낮습니다. 현재 목표 E=${targetDistribution.E}%라 D/E는 하위 ${targetDistribution.E}% 경계로 계산됩니다.`);
+  if (eCut != null && eCut < 40) {
+    reasons.push(`E/미도달이 ${eCut}점입니다. 이 값은 40% 최소 성취기준을 간신히 넘는 학생 기준의 참고 계산이며, 현재는 40점 참고선보다 낮습니다.`);
+  }
+  if (output.cutScores.DE < 20) {
+    reasons.push(`D/E가 ${output.cutScores.DE}점으로 낮습니다. 현재 목표 E=${targetDistribution.E}%라 하위 경계가 매우 낮게 잡혀 있습니다.`);
   }
   if (expectedScore < 60) {
     reasons.push(`예상 평균 점수가 ${expectedScore.toFixed(1)}점이라 시험 전체 난이도가 높게 잡혀 있습니다.`);
@@ -41,16 +45,16 @@ export function AdjustmentGuideSection() {
   }
 
   if (hardShare >= 40) {
-    actions.push('어려움 배점 비중이 크면 D/E가 빠르게 내려갑니다. 일부 문항의 배점을 보통 구간으로 옮길 수 있는지 먼저 보세요.');
+    actions.push('어려움 배점 비중이 크면 하위 경계가 빠르게 내려갑니다. 일부 문항의 배점을 보통 구간으로 옮길 수 있는지 먼저 보세요.');
   }
   if (hardItems.length > 0 && hardExpectedRate < 35) {
     actions.push('어려움 문항 예상 정답률을 다시 점검하세요. 실제 수업 맥락상 5~10%p만 올라가도 하위 경계가 꽤 달라질 수 있습니다.');
   }
   if (expectedScore < 60) {
-    actions.push('쉬움·보통 문항에서 확보되는 점수가 너무 적지 않은지 보세요. 평균 기대점수 자체가 올라가야 D/E도 함께 올라갑니다.');
+    actions.push('쉬움·보통 문항에서 확보되는 점수가 너무 적지 않은지 보세요. 평균 기대점수 자체가 올라가야 하위 경계도 함께 올라갑니다.');
   }
   if (targetDistribution.E <= 3) {
-    actions.push(`학교 합의상 가능하다면 목표 E 비율 ${targetDistribution.E}%를 완화하는 방안도 있습니다. E 비율이 작을수록 D/E는 더 낮은 하위 경계가 됩니다.`);
+    actions.push(`학교 합의상 가능하다면 목표 E 비율 ${targetDistribution.E}%를 완화하는 방안도 있습니다. E 비율이 작을수록 하위 경계는 더 낮아집니다.`);
   }
 
   if (reasons.length === 0) {

@@ -3,13 +3,13 @@ import type { NeisCell, TargetDistribution, Item, Warning } from '../types';
 export function validateOutput(
   _cells: NeisCell[],
   cutScores: { AB: number; BC: number; CD: number; DE: number; E미도달?: number },
-  target: TargetDistribution,
+  _target: TargetDistribution,
   items: Item[]
 ): Warning[] {
   const warnings: Warning[] = [];
 
   // SUM_NOT_100: target percentages don't sum to 100
-  const sum = target.A + target.B + target.C + target.D + target.E;
+  const sum = _target.A + _target.B + _target.C + _target.D + _target.E;
   if (Math.abs(sum - 100) > 0.01) {
     warnings.push({
       level: 'error',
@@ -19,7 +19,7 @@ export function validateOutput(
   }
 
   // NEGATIVE_INPUT: any target value < 0
-  for (const [grade, value] of Object.entries(target)) {
+  for (const [grade, value] of Object.entries(_target)) {
     if ((value as number) < 0) {
       warnings.push({
         level: 'error',
@@ -29,33 +29,12 @@ export function validateOutput(
     }
   }
 
-  // A_OVER_40: target.A > 40
-  if (target.A > 40) {
+  // MIN_LEVEL_ADVISORY: E/미도달 reference line below 40
+  if (cutScores.E미도달 != null && cutScores.E미도달 < 40) {
     warnings.push({
       level: 'warning',
-      code: 'A_OVER_40',
-      message: `A 등급 목표 비율이 40%를 초과합니다 (현재: ${target.A}%). 결과의 신뢰성이 낮아질 수 있습니다.`,
-    });
-  }
-
-  // E_OVER_40: target.E > 40
-  if (target.E > 40) {
-    warnings.push({
-      level: 'warning',
-      code: 'E_OVER_40',
-      message: `E 등급 목표 비율이 40%를 초과합니다 (현재: ${target.E}%). 결과의 신뢰성이 낮아질 수 있습니다.`,
-    });
-  }
-
-  // MIN_LEVEL_WARN: cutScores.DE < 40
-  if (cutScores.DE < 40) {
-    const percentileNote = target.E > 0
-      ? ` 현재 목표 비율에서는 D/E가 하위 ${target.E}% 경계입니다.`
-      : ' 현재 목표 비율에서는 D/E가 E 진입선입니다.';
-    warnings.push({
-      level: 'warning',
-      code: 'MIN_LEVEL_WARN',
-      message: `D-E 경계 점수가 40점 미만입니다 (현재: ${cutScores.DE}점).${percentileNote} 최저 학력 기준을 확인하세요.`,
+      code: 'MIN_LEVEL_ADVISORY',
+      message: `참고 권고: E/미도달 경계가 ${cutScores.E미도달}점입니다. 고정분할점수의 40점선보다 낮으니 최소 성취수준 지도를 점검해 보세요. 추정분할점수에서 원점수 40점을 강제하는 규정은 아닙니다.`,
     });
   }
 

@@ -277,13 +277,6 @@ describe('computeNeisOutput - 과고 preset with 3 items', () => {
     expect(output.cutScores.DE).toBeLessThan(output.cutScores.CD);
   });
 
-  it('predicted distribution sums to approximately 100', () => {
-    const output = computeNeisOutput(items, target);
-    const d = output.predictedDistribution;
-    const sum = d.A + d.B + d.C + d.D + d.E;
-    expect(sum).toBeCloseTo(100, 0);
-  });
-
   it('has 3 categories of cells (쉬움, 보통, 어려움)', () => {
     const output = computeNeisOutput(items, target);
     const difficulties = [...new Set(output.cells.map(c => c.difficulty))];
@@ -427,19 +420,26 @@ describe('explainCell', () => {
   it('E column explanation uses E boundary z-value (not DE)', () => {
     const explanationE = explainCell('보통', 'E', items, PRESETS['일반고']);
     const explanationD = explainCell('보통', 'D', items, PRESETS['일반고']);
-    // E should use z_E (≈ -3.0, clamped) which is lower than z_DE
+    // E should use the lowest tail boundary, below D.
     expect(explanationE.z_k).toBeLessThan(explanationD.z_k);
-    // z_E should be close to -3.0 (clamped lower bound)
     expect(explanationE.z_k).toBeCloseTo(-3.0, 0);
   });
 
   it('E column explanation z_k matches actual computation z-value', () => {
-    // Verify explainCell E uses same z as computeNeisOutput E
     const target = PRESETS['일반고'];
     const cumABCDE = (target.A + target.B + target.C + target.D + target.E) / 100;
     const z_E = clamp(PhiInv(1 - cumABCDE), -3, 3);
     const explanation = explainCell('보통', 'E', items, target);
     expect(explanation.z_k).toBeCloseTo(z_E, 5);
+  });
+
+  it('E미도달 cut score stays near 40% of total points', () => {
+    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true });
+    expect(output.cutScores.E미도달).toBeDefined();
+    const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+    const reference = totalPoints * 0.4;
+    expect(output.cutScores.E미도달!).toBeGreaterThanOrEqual(reference - 5);
+    expect(output.cutScores.E미도달!).toBeLessThanOrEqual(reference + 5);
   });
 });
 
@@ -455,17 +455,6 @@ describe('Validate: SUM_NOT_100', () => {
     const w = output.warnings.find(w => w.code === 'SUM_NOT_100');
     expect(w).toBeDefined();
     expect(w?.level).toBe('error');
-  });
-});
-
-describe('Validate: A_OVER_40', () => {
-  it('reports warning when A > 40', () => {
-    const items: Item[] = [
-      { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 10, expectedRate: 60 },
-    ];
-    const target: TargetDistribution = { A: 45, B: 30, C: 15, D: 7, E: 3 };
-    const output = computeNeisOutput(items, target);
-    expect(output.warnings.some(w => w.code === 'A_OVER_40')).toBe(true);
   });
 });
 

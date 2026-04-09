@@ -7,15 +7,15 @@ import type {
   NeisOutput,
   CellExplanation,
 } from '../types';
-import { PhiInv, Phi, clamp } from './normal';
+import { PhiInv, clamp } from './normal';
 import { boundaryItemProbability } from './rasch';
 import { roundTo5, enforceMonotonicity } from './rounding';
 import { validateOutput } from './validate';
 
 const DIFFICULTY_ORDER: Difficulty[] = ['쉬움', '보통', '어려움'];
+const MINIMUM_ACHIEVEMENT_RATE = 0.4;
 
 interface ComputeOptions {
-  sigma?: number;
   includeE미도달?: boolean;
 }
 
@@ -24,12 +24,11 @@ interface ComputeOptions {
  * z_AB = PhiInv(1 - A/100), z_BC = PhiInv(1 - (A+B)/100), etc.
  * Clamped to [-3, 3].
  */
-function computeBoundaryZ(target: TargetDistribution): Record<string, number> {
+function computeBoundaryZ(target: TargetDistribution): Record<'AB' | 'BC' | 'CD' | 'DE' | 'E', number> {
   const cumA = target.A / 100;
   const cumAB = (target.A + target.B) / 100;
   const cumABC = (target.A + target.B + target.C) / 100;
   const cumABCD = (target.A + target.B + target.C + target.D) / 100;
-
   const cumABCDE = (target.A + target.B + target.C + target.D + target.E) / 100;
 
   return {
@@ -41,6 +40,38 @@ function computeBoundaryZ(target: TargetDistribution): Record<string, number> {
   };
 }
 
+function expectedScoreAtAbility(items: Item[], z: number): number {
+  return items.reduce((sum, item) => (
+    sum + item.points * boundaryItemProbability(z, item.expectedRate)
+  ), 0);
+}
+
+/**
+ * Compute the ability level of the student who barely reaches the minimum
+ * achievement criterion. This uses the 40% achievement reference line, not
+ * the extreme lower tail of the target distribution.
+ */
+function computeMinimumAchievementZ(items: Item[]): number {
+  const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+  if (totalPoints <= 0) return -3;
+
+  const targetScore = totalPoints * MINIMUM_ACHIEVEMENT_RATE;
+  let low = -8;
+  let high = 8;
+
+  for (let i = 0; i < 60; i++) {
+    const mid = (low + high) / 2;
+    const score = expectedScoreAtAbility(items, mid);
+    if (score < targetScore) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
+
+  return (low + high) / 2;
+}
+
 /**
  * Main function to compute NEIS output from items, target distribution, and options.
  */
@@ -49,24 +80,22 @@ export function computeNeisOutput(
   target: TargetDistribution,
   options: ComputeOptions = {}
 ): NeisOutput {
-  const sigma = options.sigma ?? 15;
   const includeE미도달 = options.includeE미도달 ?? true;
 
   // Handle empty items case
   if (items.length === 0) {
     const emptyCutScores = { AB: 0, BC: 0, CD: 0, DE: 0 };
-    const emptyDist: TargetDistribution = { A: 0, B: 0, C: 0, D: 0, E: 0 };
     const warnings = validateOutput([], emptyCutScores, target, []);
     return {
       cells: [],
       cutScores: emptyCutScores,
-      predictedDistribution: emptyDist,
       warnings,
     };
   }
 
   // 1. Compute boundary z-values
   const boundaryZ = computeBoundaryZ(target);
+  const minimumAchievementZ = computeMinimumAchievementZ(items);
   const boundaryEntries: Array<{ grade: Grade; z: number }> = [
     { grade: 'A', z: boundaryZ.AB },
     { grade: 'B', z: boundaryZ.BC },
@@ -136,33 +165,18 @@ export function computeNeisOutput(
   };
 
   if (includeE미도달) {
-    cutScores.E미도달 = computeCutScore('E');
+    let minimumAchievementCut = 0;
+    for (const category of presentCategories) {
+      const catItems = grouped[category];
+      const catPoints = catItems.reduce((sum, item) => sum + item.points, 0);
+      const weightedSum = catItems.reduce((sum, item) => (
+        sum + boundaryItemProbability(minimumAchievementZ, item.expectedRate) * item.points
+      ), 0);
+      const weightedAvg = catPoints > 0 ? weightedSum / catPoints : 0;
+      minimumAchievementCut += catPoints * (roundTo5(weightedAvg * 100) / 100);
+    }
+    cutScores.E미도달 = Math.round(minimumAchievementCut * 10) / 10;
   }
-
-  // 7. Compute predicted distribution using normal CDF with sigma parameter
-  const meanScore = items.reduce((sum, item) => sum + item.points * (item.expectedRate / 100), 0);
-
-  function pctAbove(cutScore: number): number {
-    return (1 - Phi((cutScore - meanScore) / sigma)) * 100;
-  }
-
-  const abovAB = pctAbove(cutScores.AB);
-  const abovBC = pctAbove(cutScores.BC);
-  const abovCD = pctAbove(cutScores.CD);
-  const abovDE = pctAbove(cutScores.DE);
-
-  const predA = clamp(abovAB, 0, 100);
-  const predAB = clamp(abovBC, 0, 100);
-  const predABC = clamp(abovCD, 0, 100);
-  const predABCD = clamp(abovDE, 0, 100);
-
-  const predictedDistribution: TargetDistribution = {
-    A: Math.round(predA * 10) / 10,
-    B: Math.round((predAB - predA) * 10) / 10,
-    C: Math.round((predABC - predAB) * 10) / 10,
-    D: Math.round((predABCD - predABC) * 10) / 10,
-    E: Math.round((100 - predABCD) * 10) / 10,
-  };
 
   // 8. Validate and generate warnings
   const warnings = validateOutput(cells, cutScores, target, items);
@@ -170,7 +184,6 @@ export function computeNeisOutput(
   return {
     cells,
     cutScores,
-    predictedDistribution,
     warnings,
   };
 }
@@ -192,7 +205,7 @@ export function explainCell(
     D: 'DE',
     E: 'E',
   };
-  const z_k = boundaryZ[gradeToKey[grade]] ?? 0;
+  const z_k = boundaryZ[gradeToKey[grade] as keyof typeof boundaryZ] ?? 0;
 
   const categoryItems = items.filter(item => item.difficulty === category);
   const totalPoints = categoryItems.reduce((sum, item) => sum + item.points, 0);

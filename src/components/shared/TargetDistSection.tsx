@@ -20,16 +20,14 @@ export function TargetDistSection() {
   const setTargetField = useExamStore((s) => s.setTargetField);
 
   const sum = GRADES.reduce((acc, g) => acc + (targetDistribution[g] ?? 0), 0);
-  const warningA = targetDistribution.A > 40 ? 'A 등급 비율이 40%를 초과합니다.' : undefined;
-  const warningE = targetDistribution.E > 40 ? 'E 등급 비율이 40%를 초과합니다. 최소 성취수준 미도달 학생 비율이 매우 높습니다.' : undefined;
-  const warning = warningA ?? warningE;
+  const warning = sum !== 100 ? '목표 등급 비율의 합은 100%가 되어야 합니다.' : undefined;
   const notices = [
     targetDistribution.A <= 40
-      ? { tone: 'success' as const, text: `권고 충족: A 비율 ${targetDistribution.A}% (권고 40% 이하)` }
-      : { tone: 'warning' as const, text: `권고 미충족: A 비율 ${targetDistribution.A}% (권고 40% 이하)` },
+      ? { tone: 'success' as const, text: `앱 참고선: A 비율 ${targetDistribution.A}% (40% 이하 권장, 강제 기준 아님)` }
+      : { tone: 'warning' as const, text: `앱 참고선 초과: A 비율 ${targetDistribution.A}% (40% 이하 권장, 강제 기준 아님)` },
     targetDistribution.E <= 40
-      ? { tone: 'success' as const, text: `권고 충족: E 비율 ${targetDistribution.E}% (권고 40% 이하)` }
-      : { tone: 'warning' as const, text: `권고 미충족: E 비율 ${targetDistribution.E}% (권고 40% 이하)` },
+      ? { tone: 'success' as const, text: `앱 참고선: E 비율 ${targetDistribution.E}% (40% 이하 권장, 강제 기준 아님)` }
+      : { tone: 'warning' as const, text: `앱 참고선 초과: E 비율 ${targetDistribution.E}% (40% 이하 권장, 강제 기준 아님)` },
   ];
 
   const values: Record<string, number> = {};

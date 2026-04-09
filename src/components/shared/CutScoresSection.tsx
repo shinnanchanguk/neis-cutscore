@@ -6,42 +6,50 @@ import { useNeisOutput } from '@/hooks/useNeisOutput';
 export function CutScoresSection() {
   const output = useNeisOutput();
   const includeE미도달 = useExamStore((s) => s.settings.includeE미도달);
-  const targetDistribution = useExamStore((s) => s.targetDistribution);
-  const deRecommended = output ? output.cutScores.DE >= 40 : undefined;
+  const eLevelAdvisoryMet = output?.cutScores.E미도달 != null
+    ? output.cutScores.E미도달 >= 40
+    : undefined;
 
   const baseScores = output
     ? [
-        { label: 'A/B', value: `${output.cutScores.AB}점` },
-        { label: 'B/C', value: `${output.cutScores.BC}점` },
-        { label: 'C/D', value: `${output.cutScores.CD}점` },
+        { label: 'A/B', value: `${output.cutScores.AB}점`, hint: '성취도 A 최소능력 경계' },
+        { label: 'B/C', value: `${output.cutScores.BC}점`, hint: '성취도 B 최소능력 경계' },
+        { label: 'C/D', value: `${output.cutScores.CD}점`, hint: '성취도 C 최소능력 경계' },
         {
           label: 'D/E',
           value: `${output.cutScores.DE}점`,
-          hint: deRecommended ? '권고: 40점 이상 · 충족' : '권고: 40점 이상 · 미충족',
-          tone: deRecommended ? 'success' as const : 'warning' as const,
+          hint: '성취도 D 최소능력 경계',
         },
       ]
     : [
-        { label: 'A/B', value: '—' },
-        { label: 'B/C', value: '—' },
-        { label: 'C/D', value: '—' },
-        { label: 'D/E', value: '—', hint: '권고: 40점 이상' },
+        { label: 'A/B', value: '—', hint: '성취도 A 최소능력 경계' },
+        { label: 'B/C', value: '—', hint: '성취도 B 최소능력 경계' },
+        { label: 'C/D', value: '—', hint: '성취도 C 최소능력 경계' },
+        { label: 'D/E', value: '—', hint: '성취도 D 최소능력 경계' },
       ];
 
   const scores = includeE미도달 && output?.cutScores.E미도달 != null
-    ? [...baseScores, { label: 'E/미도달', value: `${output.cutScores.E미도달}점` }]
+    ? [...baseScores, {
+        label: 'E/미도달',
+        value: `${output.cutScores.E미도달}점`,
+        hint: eLevelAdvisoryMet
+          ? '참고선: 고정분할점수 40점과 비교 · 권고 충족'
+          : '참고선: 고정분할점수 40점과 비교 · 권고 미충족',
+        tone: eLevelAdvisoryMet ? 'success' as const : 'warning' as const,
+      }]
     : includeE미도달 && !output
-      ? [...baseScores, { label: 'E/미도달', value: '—' }]
+      ? [...baseScores, { label: 'E/미도달', value: '—', hint: '참고선: 고정분할점수 40점과 비교' }]
       : baseScores;
 
   return (
-    <DesignSection title="분할점수" hint="D/E는 E 진입선">
+    <DesignSection title="분할점수" hint="D/E와 E/미도달을 구분해서 보세요">
       <DesignScoreCards scores={scores} />
       {output && (
         <p style={{ ...designStyles.textSmall, ...designStyles.textMuted, margin: '12px 0 0 0' }}>
-          D/E는 D를 간신히 받는 학생의 경계, 즉 E 진입선이라서 목표 E={targetDistribution.E}%이면
-          하위 {targetDistribution.E}% 경계가 됩니다. 시험 평균이 낮거나 어려움 배점 비중이 크면
-          40점 미만으로 내려갈 수 있습니다.
+          경기도교육청 자료는 고정분할점수를 90/80/70/60/40으로 설명합니다.
+          이 앱의 E/미도달은 NEIS 표의 E열과 별도로, 40% 최소 성취기준을 간신히 넘는 학생 기준으로 참고 계산합니다.
+          다만 NEIS 추정분할점수에서 원점수 40점을 강제하는 규정은 아니므로,
+          40점 비교는 참고용 권고로만 보세요.
         </p>
       )}
     </DesignSection>

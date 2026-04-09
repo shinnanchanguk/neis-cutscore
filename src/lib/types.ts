@@ -45,7 +45,6 @@ export interface NeisOutput {
     AB: number; BC: number; CD: number; DE: number;
     E미도달?: number;
   };
-  predictedDistribution: TargetDistribution;
   warnings: Warning[];
 }
 
@@ -59,7 +58,7 @@ export interface ExamProject {
   meta: ExamMeta;
   targetDistribution: TargetDistribution;
   items: Item[];
-  settings: { sigma: number; includeE미도달: boolean };
+  settings: { includeE미도달: boolean };
   createdAt: string;
   updatedAt: string;
   version: string;
