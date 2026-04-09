@@ -17,7 +17,7 @@ jobs:
       release_id: ${{ steps.create-release.outputs.id }}
     steps:
       - uses: actions/checkout@v4
-      - name: Create draft release
+      - name: Create draft release (private repo - internal record)
         id: create-release
         uses: softprops/action-gh-release@v2
         with:
@@ -88,15 +88,69 @@ jobs:
     runs-on: ubuntu-latest
     needs: [create-release, build-tauri]
     steps:
-      - name: Publish release
+      # 1. Publish the private repo release (internal record)
+      - name: Publish private release
         uses: actions/github-script@v7
         env:
           release_id: ${{ needs.create-release.outputs.release_id }}
         with:
           script: |
-            github.rest.repos.updateRelease({
+            await github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: process.env.release_id,
               draft: false,
-            })
+            });
+
+      # 2. Download all assets from private release
+      - name: Download private release assets
+        uses: actions/github-script@v7
+        env:
+          release_id: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const dir = 'release-assets';
+            fs.mkdirSync(dir, { recursive: true });
+
+            const { data: assets } = await github.rest.repos.listReleaseAssets({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.release_id,
+            });
+
+            for (const asset of assets) {
+              console.log(`Downloading: ${asset.name}`);
+              const response = await github.rest.repos.getReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                asset_id: asset.id,
+                headers: { accept: 'application/octet-stream' },
+              });
+              fs.writeFileSync(
+                path.join(dir, asset.name),
+                Buffer.from(response.data)
+              );
+            }
+
+      # 3. Create release on PUBLIC repo with the same assets
+      - name: Publish to public releases repo
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: shinnanchanguk/neis-cutscore-releases
+          tag_name: ${{ github.ref_name }}
+          name: "NEIS 분할점수 계산기 ${{ github.ref_name }}"
+          body: |
+            ## NEIS 분할점수 계산기 ${{ github.ref_name }}
+
+            ### 다운로드
+            - **Windows**: `.exe` 파일 다운로드 후 실행
+            - **macOS**: `.dmg` 파일 다운로드 후 설치
+            - **Linux**: `.AppImage` 또는 `.deb` 다운로드
+
+            설치 후 앱 내에서 자동 업데이트가 지원됩니다.
+
+            Made by DoRm
+          files: release-assets/*
+          token: ${{ secrets.RELEASE_PAT }}
