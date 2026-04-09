@@ -9,16 +9,20 @@ import { HelpDialog } from '@/components/shared/HelpDialog';
 import { SettingsDialog } from '@/components/shared/SettingsDialog';
 import { FileMenu } from '@/components/shared/FileMenu';
 import { HeaderMetaFields } from '@/components/shared/HeaderMetaFields';
+import { DownloadModal } from '@/components/shared/DownloadModal';
 import { useExamStore } from '@/store/examStore';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { UpdateBanner } from '@/components/shared/UpdateBanner';
+import { useIsTauri } from '@/hooks/useIsTauri';
 import { designStyles } from '@/components/design/styles';
 import type React from 'react';
 
 function AppHeader() {
+  const isTauri = useIsTauri();
   const [helpOpen, setHelpOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [downloadOpen, setDownloadOpen] = useState(false);
 
   return (
     <>
@@ -41,32 +45,48 @@ function AppHeader() {
                 } as React.CSSProperties}
                 onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
-                onClick={async () => {
-                  try {
-                    const { open } = await import('@tauri-apps/plugin-shell');
-                    await open('https://dorm-green.vercel.app/');
-                  } catch {
+                onClick={() => {
+                  if (isTauri) {
+                    import('@tauri-apps/plugin-shell').then(m => m.open('https://dorm-green.vercel.app/')).catch(() => {});
+                  } else {
                     window.open('https://dorm-green.vercel.app/', '_blank');
                   }
                 }}
               >Made by DoRm</span>
+              {!isTauri && (
+                <button
+                  style={{
+                    background: '#1A1A1A',
+                    color: '#EBE8E3',
+                    border: 'none',
+                    padding: '3px 10px',
+                    fontSize: '11px',
+                    cursor: 'pointer',
+                    fontFamily: designStyles.root.fontFamily as string,
+                    whiteSpace: 'nowrap',
+                  } as React.CSSProperties}
+                  onClick={() => setDownloadOpen(true)}
+                >앱 다운로드</button>
+              )}
             </div>
           </div>
-          <HeaderMetaFields />
+          {isTauri && <HeaderMetaFields />}
         </div>
         <nav style={designStyles.appHeaderNav as React.CSSProperties}>
-          <FileMenu />
+          {isTauri && <FileMenu />}
           <button style={designStyles.navLink as React.CSSProperties} onClick={() => setHelpOpen(true)}>도움말</button>
           <button style={designStyles.navLink as React.CSSProperties} onClick={() => setSettingsOpen(true)}>설정</button>
         </nav>
       </header>
       <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      {!isTauri && <DownloadModal open={downloadOpen} onOpenChange={setDownloadOpen} />}
     </>
   );
 }
 
 function App() {
+  const isTauri = useIsTauri();
   useDarkMode();
   useAutoSave();
 
@@ -75,7 +95,7 @@ function App() {
 
   return (
     <TooltipProvider>
-      <UpdateBanner />
+      {isTauri && <UpdateBanner />}
       <div className="design-surface">
         <DesignLayout
           header={<AppHeader />}
