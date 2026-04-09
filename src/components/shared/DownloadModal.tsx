@@ -52,7 +52,8 @@ export function DownloadModal({ open, onOpenChange }: { open: boolean; onOpenCha
             앱 다운로드 {version && <span style={{ fontSize: '11px', color: '#6B6861', marginLeft: 8 }}>{version}</span>}
           </h2>
           <p style={{ fontSize: '12px', color: '#6B6861', marginBottom: '20px', lineHeight: 1.6, fontFamily: s.root.fontFamily } as React.CSSProperties}>
-            데스크톱 앱은 오프라인에서도 사용 가능하며,<br />파일 저장·불러오기와 자동 업데이트를 지원합니다.
+            Windows / macOS 데스크톱 전용 앱입니다. (모바일 미지원)<br />
+            오프라인 사용, 파일 저장·불러오기, 자동 업데이트를 지원합니다.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' } as React.CSSProperties}>
