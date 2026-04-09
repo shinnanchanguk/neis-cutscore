@@ -17,7 +17,7 @@ export function AlertsSection() {
           const comparison = estimated >= 40 ? '40점 참고선보다 높음' : '40점 참고선보다 낮음';
           items.push({
             level: estimated >= 40 ? 'info' as const : 'warning' as const,
-            message: `참고: 추정 E/미도달 ${estimated}점 · 예상 미도달 ${expectedUnmetRate}% 반영 · ${comparison}. 학교별 최종 기준은 다를 수 있으니 참고용으로만 보세요.`,
+            message: `참고: 추정 E/미도달 ${estimated}점 · 예상 미도달 ${expectedUnmetRate}% 반영 · ${comparison}. 이 값이 학교의 실제 최종 미도달 판정 기준 그 자체는 아니므로 참고용으로만 보세요.`,
           });
         }
         if (items.length === 0) {
