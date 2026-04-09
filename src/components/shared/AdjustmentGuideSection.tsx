@@ -11,11 +11,13 @@ function formatPercent(value: number): string {
 export function AdjustmentGuideSection() {
   const items = useExamStore((s) => s.items);
   const targetDistribution = useExamStore((s) => s.targetDistribution);
+  const includeE미도달 = useExamStore((s) => s.settings.includeE미도달);
   const output = useNeisOutput();
 
   if (!output || items.length === 0) return null;
 
   const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+  const referenceScore = Math.round(totalPoints * 0.4 * 10) / 10;
   const expectedScore = items.reduce((sum, item) => sum + item.points * (item.expectedRate / 100), 0);
   const hardItems = items.filter((item) => item.difficulty === '어려움');
   const hardPoints = hardItems.reduce((sum, item) => sum + item.points, 0);
@@ -28,8 +30,8 @@ export function AdjustmentGuideSection() {
   const reasons: string[] = [];
   const actions: string[] = [];
 
-  if (eCut != null && eCut < 40) {
-    reasons.push(`E/미도달이 ${eCut}점입니다. 40% 최소 성취기준을 기준으로 잡더라도 5% 반올림과 난이도 가중 때문에 40점보다 약간 낮아질 수 있습니다.`);
+  if (includeE미도달 && eCut != null && eCut < referenceScore) {
+    reasons.push(`추정 E/미도달이 ${eCut}점이라 고정 40% 기준(${referenceScore}점)보다 낮습니다. 추정분할점수에서는 이런 차이가 생길 수 있으니 최소 성취수준 지도를 별도로 점검하세요.`);
   }
   if (output.cutScores.DE < 20) {
     reasons.push(`D/E가 ${output.cutScores.DE}점으로 낮습니다. 현재 목표 E=${targetDistribution.E}%라 하위 경계가 매우 낮게 잡혀 있습니다.`);

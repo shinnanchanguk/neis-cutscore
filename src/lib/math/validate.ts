@@ -2,7 +2,7 @@ import type { NeisCell, TargetDistribution, Item, Warning } from '../types';
 
 export function validateOutput(
   _cells: NeisCell[],
-  cutScores: { AB: number; BC: number; CD: number; DE: number; E미도달?: number },
+  _cutScores: { AB: number; BC: number; CD: number; DE: number; E미도달?: number },
   _target: TargetDistribution,
   items: Item[]
 ): Warning[] {
@@ -27,15 +27,6 @@ export function validateOutput(
         message: `${grade} 등급의 목표 비율이 음수입니다 (${value}%). 0 이상의 값을 입력하세요.`,
       });
     }
-  }
-
-  // MIN_LEVEL_ADVISORY: E/미도달 reference line below 40
-  if (cutScores.E미도달 != null && cutScores.E미도달 < 40) {
-    warnings.push({
-      level: 'warning',
-      code: 'MIN_LEVEL_ADVISORY',
-      message: `참고 권고: E/미도달 경계가 ${cutScores.E미도달}점입니다. 고정분할점수의 40점선보다 낮으니 최소 성취수준 지도를 점검해 보세요. 추정분할점수에서 원점수 40점을 강제하는 규정은 아닙니다.`,
-    });
   }
 
   if (items.length > 0) {

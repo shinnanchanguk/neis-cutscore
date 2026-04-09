@@ -13,13 +13,6 @@ import { roundTo5, enforceMonotonicity } from './rounding';
 import { validateOutput } from './validate';
 
 const DIFFICULTY_ORDER: Difficulty[] = ['쉬움', '보통', '어려움'];
-const ACHIEVEMENT_RATE_BY_GRADE: Record<Grade, number> = {
-  A: 0.9,
-  B: 0.8,
-  C: 0.7,
-  D: 0.6,
-  E: 0.4,
-};
 
 interface ComputeOptions {
   includeE미도달?: boolean;
@@ -46,61 +39,6 @@ function computeBoundaryZ(target: TargetDistribution): Record<'AB' | 'BC' | 'CD'
   };
 }
 
-function expectedScoreAtAbility(items: Item[], z: number): number {
-  return items.reduce((sum, item) => (
-    sum + item.points * boundaryItemProbability(z, item.expectedRate)
-  ), 0);
-}
-
-/**
- * Compute the ability level of the student who barely reaches a target
- * achievement rate (e.g. 90%, 80%, ..., 40% of total score).
- */
-function computeAchievementBoundaryZ(items: Item[], achievementRate: number): number {
-  const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
-  if (totalPoints <= 0) return -3;
-
-  const targetScore = totalPoints * achievementRate;
-  let low = -8;
-  let high = 8;
-
-  for (let i = 0; i < 60; i++) {
-    const mid = (low + high) / 2;
-    const score = expectedScoreAtAbility(items, mid);
-    if (score < targetScore) {
-      low = mid;
-    } else {
-      high = mid;
-    }
-  }
-
-  return (low + high) / 2;
-}
-
-function computeEffectiveBoundaryZ(
-  items: Item[],
-  target: TargetDistribution
-): Record<Grade, number> {
-  const targetBoundaryZ = computeBoundaryZ(target);
-  const criterionBoundaryZ: Record<Grade, number> = {
-    A: computeAchievementBoundaryZ(items, ACHIEVEMENT_RATE_BY_GRADE.A),
-    B: computeAchievementBoundaryZ(items, ACHIEVEMENT_RATE_BY_GRADE.B),
-    C: computeAchievementBoundaryZ(items, ACHIEVEMENT_RATE_BY_GRADE.C),
-    D: computeAchievementBoundaryZ(items, ACHIEVEMENT_RATE_BY_GRADE.D),
-    E: computeAchievementBoundaryZ(items, ACHIEVEMENT_RATE_BY_GRADE.E),
-  };
-
-  return {
-    A: Math.max(targetBoundaryZ.AB, criterionBoundaryZ.A),
-    B: Math.max(targetBoundaryZ.BC, criterionBoundaryZ.B),
-    C: Math.max(targetBoundaryZ.CD, criterionBoundaryZ.C),
-    D: Math.max(targetBoundaryZ.DE, criterionBoundaryZ.D),
-    // E has no separate target-below-E input, so anchor it to the
-    // minimum achievement criterion directly.
-    E: criterionBoundaryZ.E,
-  };
-}
-
 /**
  * Main function to compute NEIS output from items, target distribution, and options.
  */
@@ -123,13 +61,13 @@ export function computeNeisOutput(
   }
 
   // 1. Compute boundary z-values
-  const effectiveBoundaryZ = computeEffectiveBoundaryZ(items, target);
+  const boundaryZ = computeBoundaryZ(target);
   const boundaryEntries: Array<{ grade: Grade; z: number }> = [
-    { grade: 'A', z: effectiveBoundaryZ.A },
-    { grade: 'B', z: effectiveBoundaryZ.B },
-    { grade: 'C', z: effectiveBoundaryZ.C },
-    { grade: 'D', z: effectiveBoundaryZ.D },
-    { grade: 'E', z: effectiveBoundaryZ.E },
+    { grade: 'A', z: boundaryZ.AB },
+    { grade: 'B', z: boundaryZ.BC },
+    { grade: 'C', z: boundaryZ.CD },
+    { grade: 'D', z: boundaryZ.DE },
+    { grade: 'E', z: boundaryZ.E },
   ];
 
   // 2. Group items by difficulty
@@ -215,8 +153,15 @@ export function explainCell(
   items: Item[],
   target: TargetDistribution
 ): CellExplanation {
-  const boundaryZ = computeEffectiveBoundaryZ(items, target);
-  const z_k = boundaryZ[grade] ?? 0;
+  const boundaryZ = computeBoundaryZ(target);
+  const gradeToKey: Record<Grade, 'AB' | 'BC' | 'CD' | 'DE' | 'E'> = {
+    A: 'AB',
+    B: 'BC',
+    C: 'CD',
+    D: 'DE',
+    E: 'E',
+  };
+  const z_k = boundaryZ[gradeToKey[grade]] ?? 0;
 
   const categoryItems = items.filter(item => item.difficulty === category);
   const totalPoints = categoryItems.reduce((sum, item) => sum + item.points, 0);
