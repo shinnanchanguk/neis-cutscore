@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+src-tauri/target/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+*.Zone.Identifier
+
+# env
+.env
+.env.*
