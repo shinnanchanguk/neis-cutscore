@@ -4,7 +4,6 @@ import { DesignItemRow } from './DesignItemRow';
 
 interface DesignItem {
   id: number;
-  type: string;
   difficulty: string;
   score: number;
   correctRate: number;
@@ -48,7 +47,6 @@ export function DesignItemList({
       <div>
         <div style={designStyles.itemListHeader as React.CSSProperties}>
           <div>번호</div>
-          <div>문항구분</div>
           <div>난이도</div>
           <div>배점</div>
           <div>예상 정답률</div>

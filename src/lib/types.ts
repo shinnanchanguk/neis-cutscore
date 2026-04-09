@@ -1,12 +1,10 @@
 export type Difficulty = '쉬움' | '보통' | '어려움';
-export type ItemType = '선택형' | '서답형';
 export type Grade = 'A' | 'B' | 'C' | 'D' | 'E';
 export type PresetName = '일반고' | '과고_특목고' | '사용자정의';
 
 export interface Item {
   id: string;
   number: number;
-  type: ItemType;
   difficulty: Difficulty;
   points: number;
   expectedRate: number; // 0~100

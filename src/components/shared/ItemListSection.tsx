@@ -2,7 +2,7 @@ import { DesignSection, DesignItemList } from '@/components/design';
 import { useExamStore } from '@/store/examStore';
 import { FieldTooltip } from '@/components/shared/FieldTooltip';
 import { fieldTooltips } from '@/content/help';
-import type { Difficulty, ItemType } from '@/lib/types';
+import type { Difficulty } from '@/lib/types';
 
 export function ItemListSection() {
   const items = useExamStore((s) => s.items);
@@ -18,7 +18,6 @@ export function ItemListSection() {
   // Map store items to DesignItem format (uses index-based id for display)
   const designItems = items.map((item) => ({
     id: item.number,
-    type: item.type,
     difficulty: item.difficulty,
     score: item.points,
     correctRate: item.expectedRate,
@@ -27,9 +26,7 @@ export function ItemListSection() {
   const handleUpdate = (index: number, field: string, value: string | number) => {
     const item = items[index];
     if (!item) return;
-    if (field === 'type') {
-      updateItem(item.id, { type: value as ItemType });
-    } else if (field === 'difficulty') {
+    if (field === 'difficulty') {
       updateItem(item.id, { difficulty: value as Difficulty });
     } else if (field === 'score') {
       updateItem(item.id, { points: Number(value) });

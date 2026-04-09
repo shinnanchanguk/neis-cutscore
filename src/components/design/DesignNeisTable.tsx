@@ -2,7 +2,6 @@ import React from 'react';
 import { designStyles } from './styles';
 
 interface NeisGroup {
-  type: string;
   difficulty: string;
   itemNumbers: string;
   itemCount: number;
@@ -46,7 +45,6 @@ export function DesignNeisTable({
       <table style={designStyles.table as React.CSSProperties}>
         <thead>
           <tr>
-            <th rowSpan={2} style={designStyles.th as React.CSSProperties}>문항구분</th>
             <th rowSpan={2} style={designStyles.th as React.CSSProperties}>난이도</th>
             <th rowSpan={2} style={designStyles.th as React.CSSProperties}>해당문항번호</th>
             <th rowSpan={2} style={designStyles.th as React.CSSProperties}>문항수</th>
@@ -62,7 +60,6 @@ export function DesignNeisTable({
         <tbody>
           {groups.map((g, i) => (
             <tr key={i}>
-              <td style={designStyles.tdCenter as React.CSSProperties}>{g.type}</td>
               <td style={designStyles.tdCenter as React.CSSProperties}>{g.difficulty}</td>
               <td style={designStyles.tdLeft as React.CSSProperties}>{g.itemNumbers}</td>
               <td style={designStyles.td as React.CSSProperties}>{g.itemCount}</td>

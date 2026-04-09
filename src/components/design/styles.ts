@@ -122,7 +122,7 @@ export const designStyles = {
   },
   itemListHeader: {
     display: 'grid',
-    gridTemplateColumns: '36px 90px 90px 56px 1fr 56px',
+    gridTemplateColumns: '36px 90px 56px 1fr 56px',
     gap: '8px',
     paddingBottom: '8px',
     borderBottom: '1px solid var(--design-border)',
@@ -132,7 +132,7 @@ export const designStyles = {
   },
   itemRow: {
     display: 'grid',
-    gridTemplateColumns: '36px 90px 90px 56px 1fr 56px',
+    gridTemplateColumns: '36px 90px 56px 1fr 56px',
     gap: '8px',
     alignItems: 'center',
     padding: '6px 0',

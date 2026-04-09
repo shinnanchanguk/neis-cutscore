@@ -43,7 +43,6 @@ function renumber(items: Item[]): Item[] {
 
 function createDefaultItem(): Omit<Item, 'id' | 'number'> {
   return {
-    type: '선택형',
     difficulty: '보통',
     points: 4,
     expectedRate: 60,

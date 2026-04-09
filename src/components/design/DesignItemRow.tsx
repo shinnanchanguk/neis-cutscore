@@ -3,7 +3,6 @@ import { designStyles } from './styles';
 
 interface DesignItemRowItem {
   id: number;
-  type: string;
   difficulty: string;
   score: number;
   correctRate: number;
@@ -26,14 +25,6 @@ export function DesignItemRow({ item, onUpdate, onDelete, onDuplicate }: DesignI
       onMouseLeave={() => setHovered(false)}
     >
       <div style={designStyles.cellId as React.CSSProperties}>{item.id}</div>
-      <select
-        style={{ ...designStyles.select, padding: '6px 8px', fontSize: '11px' } as React.CSSProperties}
-        value={item.type}
-        onChange={(e) => onUpdate('type', e.target.value)}
-      >
-        <option>선택형</option>
-        <option>서답형</option>
-      </select>
       <select
         style={{ ...designStyles.select, padding: '6px 8px', fontSize: '11px' } as React.CSSProperties}
         value={item.difficulty}

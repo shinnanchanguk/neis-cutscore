@@ -5,7 +5,7 @@ import { useNeisOutput } from '@/hooks/useNeisOutput';
 import { CellPopover } from '@/components/shared/CellPopover';
 import { explainCell } from '@/lib/math/cutscore';
 import { DEFAULT_EXPECTED_UNMET_RATE } from '@/lib/presets';
-import type { Difficulty, ItemType, Grade, CellExplanation } from '@/lib/types';
+import type { Difficulty, Grade, CellExplanation } from '@/lib/types';
 
 const DIFFICULTY_ORDER: Difficulty[] = ['쉬움', '보통', '어려움'];
 const GRADES = ['A', 'B', 'C', 'D', 'E'];
@@ -24,14 +24,13 @@ export function NeisTableSection() {
   const [cellExplanation, setCellExplanation] = useState<CellExplanation | null>(null);
 
   // Build data per difficulty, then always output all 3 rows (NEIS fixed structure)
-  const difficultyData = new Map<Difficulty, { types: Set<ItemType>; numbers: number[]; totalPoints: number }>();
+  const difficultyData = new Map<Difficulty, { numbers: number[]; totalPoints: number }>();
 
   for (const item of items) {
     if (!difficultyData.has(item.difficulty)) {
-      difficultyData.set(item.difficulty, { types: new Set(), numbers: [], totalPoints: 0 });
+      difficultyData.set(item.difficulty, { numbers: [], totalPoints: 0 });
     }
     const group = difficultyData.get(item.difficulty)!;
-    group.types.add(item.type);
     group.numbers.push(item.number);
     group.totalPoints += item.points;
   }
@@ -53,7 +52,6 @@ export function NeisTableSection() {
     }
 
     return {
-      type: data ? Array.from(data.types).sort().join(', ') : '',
       difficulty,
       itemNumbers: data ? data.numbers.sort((a, b) => a - b).join(', ') : '',
       itemCount: data?.numbers.length ?? 0,

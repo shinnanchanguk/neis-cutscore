@@ -199,7 +199,6 @@ describe('computeNeisOutput - 과고 preset with 3 items', () => {
     {
       id: '1',
       number: 1,
-      type: '선택형',
       difficulty: '쉬움',
       points: 21,
       expectedRate: 86,
@@ -207,7 +206,6 @@ describe('computeNeisOutput - 과고 preset with 3 items', () => {
     {
       id: '2',
       number: 2,
-      type: '선택형',
       difficulty: '보통',
       points: 43,
       expectedRate: 65,
@@ -215,7 +213,6 @@ describe('computeNeisOutput - 과고 preset with 3 items', () => {
     {
       id: '3',
       number: 3,
-      type: '서답형',
       difficulty: '어려움',
       points: 36,
       expectedRate: 30,
@@ -307,9 +304,9 @@ describe('Edge: 0 items returns null-safe output', () => {
 
 describe('Edge: all same difficulty', () => {
   const items: Item[] = [
-    { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 10, expectedRate: 60 },
-    { id: '2', number: 2, type: '선택형', difficulty: '보통', points: 10, expectedRate: 70 },
-    { id: '3', number: 3, type: '선택형', difficulty: '보통', points: 10, expectedRate: 50 },
+    { id: '1', number: 1, difficulty: '보통', points: 10, expectedRate: 60 },
+    { id: '2', number: 2, difficulty: '보통', points: 10, expectedRate: 70 },
+    { id: '3', number: 3, difficulty: '보통', points: 10, expectedRate: 50 },
   ];
 
   it('only creates 보통 difficulty cells', () => {
@@ -339,7 +336,7 @@ describe('Edge: all same difficulty', () => {
 
 describe('E/미도달 cutoff when includeE미도달 = true', () => {
   const items: Item[] = [
-    { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 50, expectedRate: 60 },
+    { id: '1', number: 1, difficulty: '보통', points: 50, expectedRate: 60 },
   ];
   const options = { includeE미도달: true, expectedUnmetRate: 5 };
 
@@ -403,8 +400,8 @@ describe('E/미도달 cutoff when includeE미도달 = true', () => {
 
 describe('explainCell', () => {
   const items: Item[] = [
-    { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 30, expectedRate: 65 },
-    { id: '2', number: 2, type: '서답형', difficulty: '보통', points: 20, expectedRate: 45 },
+    { id: '1', number: 1, difficulty: '보통', points: 30, expectedRate: 65 },
+    { id: '2', number: 2, difficulty: '보통', points: 20, expectedRate: 45 },
   ];
 
   it('returns correct category and grade', () => {
@@ -459,7 +456,7 @@ describe('explainCell', () => {
 describe('Validate: SUM_NOT_100', () => {
   it('reports SUM_NOT_100 when target does not sum to 100', () => {
     const items: Item[] = [
-      { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 10, expectedRate: 60 },
+      { id: '1', number: 1, difficulty: '보통', points: 10, expectedRate: 60 },
     ];
     const badTarget: TargetDistribution = { A: 10, B: 10, C: 10, D: 10, E: 10 }; // sum = 50
     const output = computeNeisOutput(items, badTarget);
@@ -472,8 +469,8 @@ describe('Validate: SUM_NOT_100', () => {
 describe('Validate: ALL_LOW_RATE', () => {
   it('reports warning when all items have expectedRate < 20', () => {
     const items: Item[] = [
-      { id: '1', number: 1, type: '선택형', difficulty: '어려움', points: 10, expectedRate: 5 },
-      { id: '2', number: 2, type: '선택형', difficulty: '어려움', points: 10, expectedRate: 10 },
+      { id: '1', number: 1, difficulty: '어려움', points: 10, expectedRate: 5 },
+      { id: '2', number: 2, difficulty: '어려움', points: 10, expectedRate: 10 },
     ];
     const output = computeNeisOutput(items, PRESETS['일반고']);
     expect(output.warnings.some(w => w.code === 'ALL_LOW_RATE')).toBe(true);
@@ -483,8 +480,8 @@ describe('Validate: ALL_LOW_RATE', () => {
 describe('Validate: ALL_HIGH_RATE', () => {
   it('reports warning when all items have expectedRate > 95', () => {
     const items: Item[] = [
-      { id: '1', number: 1, type: '선택형', difficulty: '쉬움', points: 10, expectedRate: 98 },
-      { id: '2', number: 2, type: '선택형', difficulty: '쉬움', points: 10, expectedRate: 99 },
+      { id: '1', number: 1, difficulty: '쉬움', points: 10, expectedRate: 98 },
+      { id: '2', number: 2, difficulty: '쉬움', points: 10, expectedRate: 99 },
     ];
     const output = computeNeisOutput(items, PRESETS['일반고']);
     expect(output.warnings.some(w => w.code === 'ALL_HIGH_RATE')).toBe(true);
@@ -494,7 +491,7 @@ describe('Validate: ALL_HIGH_RATE', () => {
 describe('Validate: UNMET_RATE_ZERO', () => {
   it('reports warning when includeE미도달 is enabled and expectedUnmetRate is 0', () => {
     const items: Item[] = [
-      { id: '1', number: 1, type: '선택형', difficulty: '보통', points: 10, expectedRate: 60 },
+      { id: '1', number: 1, difficulty: '보통', points: 10, expectedRate: 60 },
     ];
     const output = computeNeisOutput(items, PRESETS['일반고'], {
       includeE미도달: true,
