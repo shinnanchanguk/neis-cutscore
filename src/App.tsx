@@ -54,9 +54,9 @@ function AppHeader() {
           onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
           onClick={() => {
             if (isTauri) {
-              import('@tauri-apps/plugin-shell').then(m => m.open('https://dorm-green.vercel.app/')).catch(() => {});
+              import('@tauri-apps/plugin-shell').then(m => m.open('https://dorm.dev')).catch(() => {});
             } else {
-              window.open('https://dorm-green.vercel.app/', '_blank');
+              window.open('https://dorm.dev', '_blank');
             }
           }}
         >Made by DoRm</span>
