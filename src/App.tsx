@@ -26,54 +26,63 @@ function AppHeader() {
 
   return (
     <>
-      <header style={designStyles.appHeader as React.CSSProperties}>
-        <div style={designStyles.appHeaderLeft as React.CSSProperties}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' } as React.CSSProperties}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px' } as React.CSSProperties}>
-              <h1 style={designStyles.appHeaderH1 as React.CSSProperties}>추정 분할 점수 계산기</h1>
-              <span
-                role="link"
-                tabIndex={0}
-                style={{
-                  ...designStyles.textSmall,
-                  ...designStyles.textMuted,
-                  textDecoration: 'none',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  fontFamily: '"Brush Script MT", "Segoe Script", cursive',
-                  fontSize: '14px',
-                } as React.CSSProperties}
-                onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
-                onClick={() => {
-                  if (isTauri) {
-                    import('@tauri-apps/plugin-shell').then(m => m.open('https://dorm-green.vercel.app/')).catch(() => {});
-                  } else {
-                    window.open('https://dorm-green.vercel.app/', '_blank');
-                  }
-                }}
-              >Made by DoRm</span>
-              {!isTauri && (
-                <button
-                  style={{
-                    background: '#1A1A1A',
-                    color: '#EBE8E3',
-                    border: 'none',
-                    padding: '3px 10px',
-                    fontSize: '11px',
-                    cursor: 'pointer',
-                    fontFamily: designStyles.root.fontFamily as string,
-                    whiteSpace: 'nowrap',
-                  } as React.CSSProperties}
-                  onClick={() => setDownloadOpen(true)}
-                  title="데이터가 외부로 나가지 않고 내 컴퓨터에 저장되게 하세요!"
-                >데스크톱 앱 다운로드</button>
-              )}
-            </div>
+      <header style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '10px 24px',
+        borderBottom: '1px solid var(--design-border)',
+        flexShrink: 0,
+        gap: '12px',
+        minHeight: '44px',
+        flexWrap: 'wrap',
+      } as React.CSSProperties}>
+        <h1 style={{ ...designStyles.appHeaderH1, flexShrink: 0 } as React.CSSProperties}>추정 분할 점수 계산기</h1>
+        <span
+          role="link"
+          tabIndex={0}
+          style={{
+            ...designStyles.textSmall,
+            ...designStyles.textMuted,
+            textDecoration: 'none',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            fontFamily: '"Brush Script MT", "Segoe Script", cursive',
+            fontSize: '14px',
+            flexShrink: 0,
+          } as React.CSSProperties}
+          onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+          onClick={() => {
+            if (isTauri) {
+              import('@tauri-apps/plugin-shell').then(m => m.open('https://dorm-green.vercel.app/')).catch(() => {});
+            } else {
+              window.open('https://dorm-green.vercel.app/', '_blank');
+            }
+          }}
+        >Made by DoRm</span>
+        {!isTauri && (
+          <button
+            style={{
+              background: '#1A1A1A',
+              color: '#EBE8E3',
+              border: 'none',
+              padding: '3px 10px',
+              fontSize: '11px',
+              cursor: 'pointer',
+              fontFamily: designStyles.root.fontFamily as string,
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            } as React.CSSProperties}
+            onClick={() => setDownloadOpen(true)}
+            title="데이터가 외부로 나가지 않고 내 컴퓨터에 저장되게 하세요!"
+          >데스크톱 앱 다운로드</button>
+        )}
+        {isTauri && (
+          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' } as React.CSSProperties}>
+            <HeaderMetaFields />
           </div>
-          {isTauri && <HeaderMetaFields />}
-        </div>
-        <nav style={designStyles.appHeaderNav as React.CSSProperties}>
+        )}
+        <nav style={{ ...designStyles.appHeaderNav, flexShrink: 0, marginLeft: 'auto' } as React.CSSProperties}>
           {isTauri && <FileMenu />}
           <button style={designStyles.navLink as React.CSSProperties} onClick={() => setHelpOpen(true)}>도움말</button>
           <button style={designStyles.navLink as React.CSSProperties} onClick={() => setSettingsOpen(true)}>설정</button>
