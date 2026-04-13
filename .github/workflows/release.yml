@@ -231,6 +231,6 @@ jobs:
 
             설치 후 앱 내에서 자동 업데이트가 지원됩니다.
 
-            Made by DoRm
+            [Made by DoRm](https://dorm.dev)
           files: release-files/*
           token: ${{ secrets.RELEASE_PAT }}

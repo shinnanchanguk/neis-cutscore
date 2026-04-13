@@ -133,7 +133,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
               </div>
               <div style={sectionStyle}>
                 <p style={sectionTitleStyle}>제작</p>
-                <p style={sectionContentStyle}>{helpContent.about.credit}</p>
+                <p style={sectionContentStyle}><a href="https://dorm.dev" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>{helpContent.about.credit}</a></p>
               </div>
               <div style={sectionStyle}>
                 <p style={sectionTitleStyle}>참고 문서</p>
