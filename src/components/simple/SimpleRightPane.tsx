@@ -79,6 +79,11 @@ export function SimpleRightPane() {
           groups={groups}
           grades={GRADES}
         />
+        <div style={{ ...designStyles.alertInfo, marginTop: '8px', lineHeight: '1.6' } as React.CSSProperties}>
+          간편 모드에서는 문항번호·문항수를 입력하지 않습니다.
+          NEIS에는 위 표의 A~E 예상정답률(%)만 정확히 옮겨 입력하고,
+          난이도별 배점합은 NEIS의 실제 값과 동일하게 맞춰주세요.
+        </div>
       </DesignSection>
 
       {output.warnings.length > 0 && (
