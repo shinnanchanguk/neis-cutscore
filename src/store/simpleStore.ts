@@ -15,8 +15,8 @@ interface SimpleState {
 export const useSimpleStore = create<SimpleState>()(
   persist(
     (set) => ({
-      categoryPoints: { '쉬움': 28, '보통': 42, '어려움': 30 },
-      desiredCutScores: { A: 75, B: 58, C: 41, D: 27, E: 11 },
+      categoryPoints: { '쉬움': 0, '보통': 0, '어려움': 0 },
+      desiredCutScores: { A: 0, B: 0, C: 0, D: 0, E: 0 },
       spread: 15,
 
       setCategoryPoints: (difficulty, value) => {
