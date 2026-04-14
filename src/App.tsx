@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { DesignLayout } from '@/components/design';
 import { LeftPane } from '@/components/shared/LeftPane';
 import { RightPane } from '@/components/shared/RightPane';
+import { SimpleLeftPane } from '@/components/simple/SimpleLeftPane';
+import { SimpleRightPane } from '@/components/simple/SimpleRightPane';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
 import { OnboardingModal } from '@/components/shared/OnboardingModal';
@@ -18,8 +20,21 @@ import { useIsTauri } from '@/hooks/useIsTauri';
 import { designStyles } from '@/components/design/styles';
 import type React from 'react';
 
+const modeTabStyle = (active: boolean): React.CSSProperties => ({
+  padding: '3px 10px',
+  fontSize: '11px',
+  fontFamily: designStyles.root.fontFamily as string,
+  cursor: 'pointer',
+  border: '1px solid var(--design-border)',
+  background: active ? 'var(--design-bg-inverted)' : 'transparent',
+  color: active ? 'var(--design-fg-inverted)' : 'var(--design-muted)',
+  transition: 'background 0.15s, color 0.15s',
+});
+
 function AppHeader() {
   const isTauri = useIsTauri();
+  const mode = useExamStore((s) => s.settings.mode);
+  const setSetting = useExamStore((s) => s.setSetting);
   const [helpOpen, setHelpOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [downloadOpen, setDownloadOpen] = useState(false);
@@ -37,6 +52,16 @@ function AppHeader() {
         flexWrap: 'wrap',
       } as React.CSSProperties}>
         <h1 style={{ ...designStyles.appHeaderH1, flexShrink: 0 } as React.CSSProperties}>추정 분할 점수 계산기</h1>
+        <div style={{ display: 'flex', flexShrink: 0 }}>
+          <button
+            style={modeTabStyle(mode === 'detail')}
+            onClick={() => setSetting('mode', 'detail')}
+          >상세</button>
+          <button
+            style={{ ...modeTabStyle(mode === 'simple'), borderLeft: 'none' }}
+            onClick={() => setSetting('mode', 'simple')}
+          >간편</button>
+        </div>
         <span
           role="link"
           tabIndex={0}
@@ -100,6 +125,7 @@ function App() {
   useDarkMode();
   useAutoSave();
 
+  const mode = useExamStore((s) => s.settings.mode);
   const onboardingCompleted = useExamStore((s) => s.settings.onboardingCompleted);
   const [showOnboarding, setShowOnboarding] = useState(!onboardingCompleted);
 
@@ -109,8 +135,8 @@ function App() {
       <div className="design-surface">
         <DesignLayout
           header={<AppHeader />}
-          leftPane={<LeftPane />}
-          rightPane={<RightPane />}
+          leftPane={mode === 'simple' ? <SimpleLeftPane /> : <LeftPane />}
+          rightPane={mode === 'simple' ? <SimpleRightPane /> : <RightPane />}
         />
       </div>
       <OnboardingModal

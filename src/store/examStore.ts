@@ -8,6 +8,7 @@ interface ExamSettings {
   expectedUnmetRate: number;
   darkMode: 'system' | 'light' | 'dark';
   onboardingCompleted: boolean;
+  mode: 'detail' | 'simple';
 }
 
 interface ExamState {
@@ -61,6 +62,7 @@ const DEFAULT_SETTINGS: ExamSettings = {
   expectedUnmetRate: DEFAULT_EXPECTED_UNMET_RATE,
   darkMode: 'light',
   onboardingCompleted: false,
+  mode: 'detail',
 };
 
 const DEFAULT_PRESET: PresetName = '일반고';
