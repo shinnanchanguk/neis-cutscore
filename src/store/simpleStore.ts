@@ -48,7 +48,7 @@ export const useSimpleStore = create<SimpleState>()(
     }),
     {
       name: 'neis-simple-store',
-      version: 2,
+      version: 3,
       migrate: () => createInitialSimpleState(),
     }
   )
