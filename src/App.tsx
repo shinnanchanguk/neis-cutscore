@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
 import { DesignLayout } from '@/components/design';
 import { LeftPane } from '@/components/shared/LeftPane';
 import { RightPane } from '@/components/shared/RightPane';
@@ -152,5 +153,54 @@ function App() {
   );
 }
 
-export default App;
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null as Error | null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('App crash:', error, info);
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 40, fontFamily: 'sans-serif' }}>
+          <h2>앱 오류가 발생했습니다</h2>
+          <p style={{ color: '#666', marginTop: 8 }}>
+            앱 데이터를 초기화하면 해결될 수 있습니다.
+          </p>
+          <button
+            style={{ marginTop: 16, padding: '8px 16px', cursor: 'pointer' }}
+            onClick={() => {
+              localStorage.clear();
+              window.location.reload();
+            }}
+          >
+            데이터 초기화 후 새로고침
+          </button>
+          <pre style={{ marginTop: 16, fontSize: 11, color: '#999', whiteSpace: 'pre-wrap' }}>
+            {this.state.error.message}
+          </pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function AppWithErrorBoundary() {
+  return (
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
+}
+
+export default AppWithErrorBoundary;
 
