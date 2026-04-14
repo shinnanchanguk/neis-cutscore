@@ -61,6 +61,13 @@ export function useUpdater() {
       const update = await check();
       if (update) {
         await update.downloadAndInstall();
+        // Clear WebView cache to prevent stale asset references
+        try {
+          const { getCurrentWebview } = await import('@tauri-apps/api/webview');
+          await getCurrentWebview().clearAllBrowsingData();
+        } catch {
+          // Ignore if not available
+        }
         // After install, relaunch
         const { relaunch } = await import('@tauri-apps/plugin-process');
         await relaunch();
