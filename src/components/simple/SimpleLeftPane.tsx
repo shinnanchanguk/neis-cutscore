@@ -31,6 +31,9 @@ export function SimpleLeftPane() {
 
   return (
     <>
+      <div style={{ ...designStyles.alertInfo, marginBottom: '24px' } as React.CSSProperties}>
+        원하는 분할점수(컷)를 입력하면 NEIS에 넣을 값을 역산합니다.
+      </div>
       <DesignSection title="난이도별 배점합" hint="총점이 100점이 되도록 입력">
         <div style={designStyles.targetDistRow as React.CSSProperties}>
           {DIFFICULTIES.map((d) => (
