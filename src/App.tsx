@@ -20,14 +20,18 @@ import { useIsTauri } from '@/hooks/useIsTauri';
 import { designStyles } from '@/components/design/styles';
 import type React from 'react';
 
-const modeTabStyle = (active: boolean): React.CSSProperties => ({
-  padding: '3px 10px',
+const modeTabStyle = (active: boolean, variant: 'detail' | 'simple'): React.CSSProperties => ({
+  padding: '4px 12px',
   fontSize: '11px',
+  fontWeight: active ? 600 : 400,
   fontFamily: designStyles.root.fontFamily as string,
   cursor: 'pointer',
-  border: '1px solid var(--design-border)',
-  background: active ? 'var(--design-bg-inverted)' : 'transparent',
-  color: active ? 'var(--design-fg-inverted)' : 'var(--design-muted)',
+  border: 'none',
+  borderRadius: '3px',
+  background: active
+    ? variant === 'detail' ? '#1A1A1A' : '#2563EB'
+    : 'transparent',
+  color: active ? '#fff' : 'var(--design-muted)',
   transition: 'background 0.15s, color 0.15s',
 });
 
@@ -52,13 +56,13 @@ function AppHeader() {
         flexWrap: 'wrap',
       } as React.CSSProperties}>
         <h1 style={{ ...designStyles.appHeaderH1, flexShrink: 0 } as React.CSSProperties}>추정 분할 점수 계산기</h1>
-        <div style={{ display: 'flex', flexShrink: 0 }}>
+        <div style={{ display: 'flex', flexShrink: 0, gap: '4px', background: 'var(--design-border)', padding: '3px', borderRadius: '5px' }}>
           <button
-            style={modeTabStyle(mode === 'detail')}
+            style={modeTabStyle(mode === 'detail', 'detail')}
             onClick={() => setSetting('mode', 'detail')}
           >상세</button>
           <button
-            style={{ ...modeTabStyle(mode === 'simple'), borderLeft: 'none' }}
+            style={modeTabStyle(mode === 'simple', 'simple')}
             onClick={() => setSetting('mode', 'simple')}
           >간편</button>
         </div>
