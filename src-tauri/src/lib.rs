@@ -107,7 +107,7 @@ pub fn run() {
     .plugin(tauri_plugin_process::init())
     .plugin(tauri_plugin_shell::init())
     .setup(|app| {
-      // Clear stale WebView cache when app version changes
+      // Clear stale WebView cache when app version changes (prevents blank screen)
       clear_webview_cache_on_upgrade(app);
 
       if cfg!(debug_assertions) {
