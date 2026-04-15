@@ -61,14 +61,9 @@ export function useUpdater() {
       const update = await check();
       if (update) {
         await update.downloadAndInstall();
-        // Clear WebView cache to prevent stale asset references
-        try {
-          const { getCurrentWebview } = await import('@tauri-apps/api/webview');
-          await getCurrentWebview().clearAllBrowsingData();
-        } catch {
-          // Ignore if not available
-        }
-        // After install, relaunch
+        // Cache clearing is handled by Rust setup on next launch (lib.rs)
+        // Windows NSIS terminates the app during install, so JS after
+        // downloadAndInstall() may not execute — don't rely on it.
         const { relaunch } = await import('@tauri-apps/plugin-process');
         await relaunch();
       }

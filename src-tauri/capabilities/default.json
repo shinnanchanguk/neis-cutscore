@@ -22,7 +22,6 @@
     "updater:allow-check",
     "updater:allow-download-and-install",
     "process:allow-restart",
-    "shell:allow-open",
-    "core:webview:allow-clear-all-browsing-data"
+    "shell:allow-open"
   ]
 }
