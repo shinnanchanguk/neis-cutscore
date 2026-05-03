@@ -102,7 +102,7 @@ export function FileMenu() {
     }
   };
 
-  // Radix dropdown closes on selection; native dialogs can race with that.
+  // Base UI closes the menu on click; native dialogs can race with that.
   // Defer to next macrotask so the menu unmounts cleanly before opening dialog.
   const deferred = (fn: () => void | Promise<void>) => () => {
     setTimeout(() => { void fn(); }, 0);
@@ -140,20 +140,20 @@ export function FileMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger style={designStyles.navLink}>파일</DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onSelect={deferred(handleNew)}>
+        <DropdownMenuItem onClick={deferred(handleNew)}>
           새 시험
           <DropdownMenuShortcut>Ctrl+N</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={deferred(handleOpen)}>
+        <DropdownMenuItem onClick={deferred(handleOpen)}>
           열기...
           <DropdownMenuShortcut>Ctrl+O</DropdownMenuShortcut>
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={deferred(handleSave)}>
+        <DropdownMenuItem onClick={deferred(handleSave)}>
           저장
           <DropdownMenuShortcut>Ctrl+S</DropdownMenuShortcut>
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={deferred(handleSaveAs)}>
+        <DropdownMenuItem onClick={deferred(handleSaveAs)}>
           다른 이름으로 저장...
           <DropdownMenuShortcut>Ctrl+Shift+S</DropdownMenuShortcut>
         </DropdownMenuItem>
@@ -166,7 +166,7 @@ export function FileMenu() {
                 {recentFiles.map((path) => (
                   <DropdownMenuItem
                     key={path}
-                    onSelect={deferred(() => handleOpenRecent(path))}
+                    onClick={deferred(() => handleOpenRecent(path))}
                     title={path}
                   >
                     {path.split(/[/\\]/).pop() ?? path}
