@@ -18,6 +18,15 @@ const GRADES: { key: Grade; label: string }[] = [
   { key: 'E', label: 'E' },
 ];
 
+function displayValue(n: number): string {
+  return n === 0 ? '' : String(n);
+}
+
+function parseNumericInput(value: string): number {
+  if (value === '') return 0;
+  return Math.max(0, Number(value) || 0);
+}
+
 export function SimpleLeftPane() {
   const categoryPoints = useSimpleStore((s) => s.categoryPoints);
   const desiredCutScores = useSimpleStore((s) => s.desiredCutScores);
@@ -44,9 +53,9 @@ export function SimpleLeftPane() {
                 min={0}
                 max={200}
                 style={designStyles.input as React.CSSProperties}
-                value={categoryPoints[d.key]}
+                value={displayValue(categoryPoints[d.key])}
                 onChange={(e) =>
-                  setCategoryPoints(d.key, Math.max(0, Number(e.target.value) || 0))
+                  setCategoryPoints(d.key, parseNumericInput(e.target.value))
                 }
               />
             </div>
@@ -68,9 +77,9 @@ export function SimpleLeftPane() {
                 max={totalPoints || 100}
                 step={0.1}
                 style={designStyles.input as React.CSSProperties}
-                value={desiredCutScores[g.key]}
+                value={displayValue(desiredCutScores[g.key])}
                 onChange={(e) =>
-                  setDesiredCutScore(g.key, Math.max(0, Number(e.target.value) || 0))
+                  setDesiredCutScore(g.key, parseNumericInput(e.target.value))
                 }
               />
             </div>

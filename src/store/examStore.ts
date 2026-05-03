@@ -62,7 +62,7 @@ const DEFAULT_SETTINGS: ExamSettings = {
   expectedUnmetRate: DEFAULT_EXPECTED_UNMET_RATE,
   darkMode: 'light',
   onboardingCompleted: false,
-  mode: 'detail',
+  mode: 'simple',
 };
 
 const DEFAULT_PRESET: PresetName = '일반고';
@@ -218,6 +218,20 @@ export const useExamStore = create<ExamState>()(
     }),
     {
       name: 'neis-cutscore-store',
+      version: 1,
+      migrate: (persistedState, version) => {
+        const state = persistedState as Partial<ExamState>;
+        if (version < 1) {
+          return {
+            ...state,
+            settings: {
+              ...(state.settings ?? {}),
+              mode: 'simple',
+            },
+          };
+        }
+        return state;
+      },
       merge: (persistedState, currentState) => {
         const persisted = persistedState as Partial<ExamState>;
         return {
