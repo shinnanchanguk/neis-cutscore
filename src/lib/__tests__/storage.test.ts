@@ -26,10 +26,10 @@ const sampleProject: ExamProject = {
   version: '1.0.0',
 } as unknown as ExamProject;
 
-const writeTextFileSpy = vi.fn(async (_path: string, _content: string) => undefined);
-const readTextFileSpy = vi.fn(async (_path: string) => JSON.stringify(sampleProject));
-const saveDialogSpy = vi.fn(async (_opts: unknown) => '/home/user/Documents/test.neiscut');
-const openDialogSpy = vi.fn(async (_opts: unknown) => '/home/user/Documents/test.neiscut');
+const writeTextFileSpy = vi.fn(async (_path: string, _content: string): Promise<void> => undefined);
+const readTextFileSpy = vi.fn(async (_path: string): Promise<string> => JSON.stringify(sampleProject));
+const saveDialogSpy = vi.fn(async (_opts: unknown): Promise<string | null> => '/home/user/Documents/test.neiscut');
+const openDialogSpy = vi.fn(async (_opts: unknown): Promise<string | null> => '/home/user/Documents/test.neiscut');
 
 vi.mock('@tauri-apps/plugin-fs', () => ({
   writeTextFile: (path: string, content: string) => writeTextFileSpy(path, content),
