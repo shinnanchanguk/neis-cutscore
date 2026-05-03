@@ -24,54 +24,69 @@ export function FileMenu() {
   };
 
   const handleOpen = async () => {
+    const tid = toast.loading('파일 열기 다이얼로그 여는 중...');
     try {
       const project = await openProject();
+      toast.dismiss(tid);
       if (project) {
         store.loadProject(project);
         toast.success('불러오기 완료');
       }
     } catch (e) {
+      toast.dismiss(tid);
       const msg = e instanceof Error ? e.message : String(e);
-      toast.error(`열기 실패: ${msg}`);
+      console.error('[FileMenu] handleOpen failed:', e);
+      toast.error(`열기 실패: ${msg}`, { duration: 10000 });
     }
   };
 
   const handleSave = async () => {
+    const tid = toast.loading('저장 중...');
     const project = store.exportProject();
     try {
       if (currentFilePath) {
         await saveProjectToPath(currentFilePath, project);
+        toast.dismiss(tid);
         toast.success('저장 완료');
       } else {
         const path = await saveProjectAs(project);
+        toast.dismiss(tid);
         if (path) {
           useExamStore.setState({ currentFilePath: path });
           toast.success('저장 완료');
         }
       }
     } catch (e) {
+      toast.dismiss(tid);
       const msg = e instanceof Error ? e.message : String(e);
-      toast.error(`저장 실패: ${msg}`);
+      console.error('[FileMenu] handleSave failed:', e);
+      toast.error(`저장 실패: ${msg}`, { duration: 10000 });
     }
   };
 
   const handleSaveAs = async () => {
+    const tid = toast.loading('저장 다이얼로그 여는 중...');
     const project = store.exportProject();
     try {
       const path = await saveProjectAs(project);
+      toast.dismiss(tid);
       if (path) {
         useExamStore.setState({ currentFilePath: path });
         toast.success('저장 완료');
       }
     } catch (e) {
+      toast.dismiss(tid);
       const msg = e instanceof Error ? e.message : String(e);
-      toast.error(`저장 실패: ${msg}`);
+      console.error('[FileMenu] handleSaveAs failed:', e);
+      toast.error(`저장 실패: ${msg}`, { duration: 10000 });
     }
   };
 
   const handleOpenRecent = async (path: string) => {
+    const tid = toast.loading('불러오는 중...');
     try {
       const project = await openProjectFromPath(path);
+      toast.dismiss(tid);
       if (project) {
         store.loadProject(project);
         useExamStore.setState({ currentFilePath: path });
@@ -80,9 +95,17 @@ export function FileMenu() {
         toast.error('파일을 열 수 없습니다');
       }
     } catch (e) {
+      toast.dismiss(tid);
       const msg = e instanceof Error ? e.message : String(e);
-      toast.error(`열기 실패: ${msg}`);
+      console.error('[FileMenu] handleOpenRecent failed:', e);
+      toast.error(`열기 실패: ${msg}`, { duration: 10000 });
     }
+  };
+
+  // Radix dropdown closes on selection; native dialogs can race with that.
+  // Defer to next macrotask so the menu unmounts cleanly before opening dialog.
+  const deferred = (fn: () => void | Promise<void>) => () => {
+    setTimeout(() => { void fn(); }, 0);
   };
 
   // Keyboard shortcuts
@@ -117,20 +140,20 @@ export function FileMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger style={designStyles.navLink}>파일</DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onSelect={handleNew}>
+        <DropdownMenuItem onSelect={deferred(handleNew)}>
           새 시험
           <DropdownMenuShortcut>Ctrl+N</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => void handleOpen()}>
+        <DropdownMenuItem onSelect={deferred(handleOpen)}>
           열기...
           <DropdownMenuShortcut>Ctrl+O</DropdownMenuShortcut>
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => void handleSave()}>
+        <DropdownMenuItem onSelect={deferred(handleSave)}>
           저장
           <DropdownMenuShortcut>Ctrl+S</DropdownMenuShortcut>
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => void handleSaveAs()}>
+        <DropdownMenuItem onSelect={deferred(handleSaveAs)}>
           다른 이름으로 저장...
           <DropdownMenuShortcut>Ctrl+Shift+S</DropdownMenuShortcut>
         </DropdownMenuItem>
@@ -143,7 +166,7 @@ export function FileMenu() {
                 {recentFiles.map((path) => (
                   <DropdownMenuItem
                     key={path}
-                    onSelect={() => void handleOpenRecent(path)}
+                    onSelect={deferred(() => handleOpenRecent(path))}
                     title={path}
                   >
                     {path.split(/[/\\]/).pop() ?? path}
