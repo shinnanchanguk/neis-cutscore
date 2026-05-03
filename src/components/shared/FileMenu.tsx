@@ -24,9 +24,15 @@ export function FileMenu() {
   };
 
   const handleOpen = async () => {
-    const project = await openProject();
-    if (project) {
-      store.loadProject(project);
+    try {
+      const project = await openProject();
+      if (project) {
+        store.loadProject(project);
+        toast.success('불러오기 완료');
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error(`열기 실패: ${msg}`);
     }
   };
 
@@ -35,15 +41,17 @@ export function FileMenu() {
     try {
       if (currentFilePath) {
         await saveProjectToPath(currentFilePath, project);
+        toast.success('저장 완료');
       } else {
         const path = await saveProjectAs(project);
         if (path) {
           useExamStore.setState({ currentFilePath: path });
+          toast.success('저장 완료');
         }
       }
-      toast.success('저장 완료');
-    } catch {
-      toast.error('저장 실패');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error(`저장 실패: ${msg}`);
     }
   };
 
@@ -55,16 +63,25 @@ export function FileMenu() {
         useExamStore.setState({ currentFilePath: path });
         toast.success('저장 완료');
       }
-    } catch {
-      toast.error('저장 실패');
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error(`저장 실패: ${msg}`);
     }
   };
 
   const handleOpenRecent = async (path: string) => {
-    const project = await openProjectFromPath(path);
-    if (project) {
-      store.loadProject(project);
-      useExamStore.setState({ currentFilePath: path });
+    try {
+      const project = await openProjectFromPath(path);
+      if (project) {
+        store.loadProject(project);
+        useExamStore.setState({ currentFilePath: path });
+        toast.success('불러오기 완료');
+      } else {
+        toast.error('파일을 열 수 없습니다');
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error(`열기 실패: ${msg}`);
     }
   };
 

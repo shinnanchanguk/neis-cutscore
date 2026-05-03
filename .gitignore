@@ -17,3 +17,8 @@ Thumbs.db
 # env
 .env
 .env.*
+
+# dev loop / claude local
+.dev-loop-active
+.dev-loop-checklist.md
+.claude/

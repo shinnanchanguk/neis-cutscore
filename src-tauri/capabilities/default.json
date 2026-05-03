@@ -8,9 +8,18 @@
   "permissions": [
     "core:default",
     "fs:default",
-    "fs:allow-read-text-file",
-    "fs:allow-write-text-file",
-    "fs:allow-exists",
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [{ "path": "**/*.neiscut" }]
+    },
+    {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [{ "path": "**/*.neiscut" }]
+    },
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [{ "path": "**/*.neiscut" }]
+    },
     "fs:allow-mkdir",
     "fs:allow-app-read-recursive",
     "fs:allow-app-write-recursive",
