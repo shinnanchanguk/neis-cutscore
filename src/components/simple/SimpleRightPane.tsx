@@ -68,6 +68,10 @@ export function SimpleRightPane() {
         <p style={{ ...designStyles.textSmall, ...designStyles.textMuted, marginTop: '12px' } as React.CSSProperties}>
           5% 단위 반올림으로 인해 희망값과 소폭 차이가 날 수 있습니다.
         </p>
+        <div style={{ ...designStyles.alertInfo, marginTop: '8px' } as React.CSSProperties}>
+          미도달(미이수) 최소성취수준 기준: <strong>{output.미이수기준}점</strong> (총점의 40%).
+          희망 E컷과 별개로, 미이수 판정은 이 기준을 적용하는 것을 권장합니다.
+        </div>
       </DesignSection>
 
       <DesignSection title="NEIS 입력값" hint="이 값을 NEIS에 입력하세요">

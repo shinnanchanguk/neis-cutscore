@@ -8,6 +8,7 @@ import type {
   CellExplanation,
 } from '../types';
 import { DEFAULT_EXPECTED_UNMET_RATE } from '../presets';
+import { minStandardCut } from '../types';
 import { PhiInv, clamp } from './normal';
 import { boundaryItemProbability } from './rasch';
 import { roundTo5, enforceMonotonicity } from './rounding';
@@ -148,7 +149,11 @@ export function computeNeisOutput(
   };
 
   if (includeE미도달) {
+    // 모델 추정 E/미도달 경계 (참고값)
     cutScores.E미도달 = computeCutScore('E');
+    // 미도달(미이수)은 최소성취수준(총점의 40%) 고정 기준으로 산출
+    const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+    cutScores.미이수기준 = minStandardCut(totalPoints);
   }
 
   // 8. Validate and generate warnings

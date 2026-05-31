@@ -1,4 +1,5 @@
 import type { NeisCell, TargetDistribution, Item, Warning } from '../types';
+import { minStandardCut } from '../types';
 
 interface ValidationOptions {
   includeE미도달: boolean;
@@ -62,6 +63,19 @@ export function validateOutput(
         code: 'ALL_HIGH_RATE',
         message: '모든 문항의 예상 정답률이 95%를 초과합니다. 문항 난이도가 너무 낮을 수 있습니다.',
       });
+    }
+
+    // MINSTD_ABOVE_DE: 최소성취수준(총점 40%)이 D/E 분할점수보다 높음 → 미이수 과다 우려
+    if (options.includeE미도달) {
+      const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+      const minCut = minStandardCut(totalPoints);
+      if (totalPoints > 0 && minCut > _cutScores.DE) {
+        warnings.push({
+          level: 'warning',
+          code: 'MINSTD_ABOVE_DE',
+          message: `최소성취수준(미이수) 기준 ${minCut}점(총점의 40%)이 D/E 분할점수 ${_cutScores.DE}점보다 높습니다. 이 난이도에서는 미이수(보장지도) 대상이 많아질 수 있으니 문항 난이도·배점을 점검하세요.`,
+        });
+      }
     }
   }
 

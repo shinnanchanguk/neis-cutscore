@@ -1,4 +1,5 @@
 import type { Difficulty, Grade, NeisCell, Warning } from '../types';
+import { minStandardCut } from '../types';
 import { roundTo5, enforceMonotonicity } from './rounding';
 
 const DIFFICULTIES: Difficulty[] = ['쉬움', '보통', '어려움'];
@@ -14,6 +15,7 @@ export interface ReverseSolverOutput {
   cells: NeisCell[];
   actualCutScores: Record<Grade, number>;
   deltas: Record<Grade, number>; // actual - desired
+  미이수기준: number; // 최소성취수준 고정 기준 = 총점 × 40%
   warnings: Warning[];
 }
 
@@ -40,11 +42,14 @@ export function solveReverse(input: ReverseSolverInput): ReverseSolverOutput {
       cells: [],
       actualCutScores: { A: 0, B: 0, C: 0, D: 0, E: 0 },
       deltas: { A: 0, B: 0, C: 0, D: 0, E: 0 },
+      미이수기준: 0,
       warnings: [
         { level: 'error', code: 'ZERO_TOTAL', message: '총 배점이 0입니다.' },
       ],
     };
   }
+
+  const 미이수기준 = minStandardCut(totalPoints);
 
   const pEasy = categoryPoints['쉬움'];
   const pMid = categoryPoints['보통'];
@@ -112,6 +117,15 @@ export function solveReverse(input: ReverseSolverInput): ReverseSolverOutput {
     }
   }
 
+  // 최소성취수준(총점 40%)이 D/E 컷보다 높으면 미이수 과다 우려
+  if (미이수기준 > actualCutScores['D']) {
+    warnings.push({
+      level: 'info',
+      code: 'MINSTD_ABOVE_DE',
+      message: `최소성취수준(미이수) 기준 ${미이수기준}점(총점의 40%)이 D/E 컷 ${actualCutScores['D']}점보다 높습니다. 미이수(보장지도) 대상이 많아질 수 있습니다.`,
+    });
+  }
+
   // Check for any cell at 0 or 100 boundary
   for (const cell of cells) {
     if (cell.value === 0 && cell.grade !== 'E') {
@@ -130,5 +144,5 @@ export function solveReverse(input: ReverseSolverInput): ReverseSolverOutput {
     }
   }
 
-  return { cells, actualCutScores, deltas, warnings };
+  return { cells, actualCutScores, deltas, 미이수기준, warnings };
 }

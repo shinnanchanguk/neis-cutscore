@@ -500,3 +500,55 @@ describe('Validate: UNMET_RATE_ZERO', () => {
     expect(output.warnings.some(w => w.code === 'UNMET_RATE_ZERO')).toBe(true);
   });
 });
+
+// ─── 미이수기준 (최소성취수준 고정 = 총점 × 40%) ──────────────────────────────
+describe('미이수기준 (detail mode, 최소성취수준 = 총점 × 40%)', () => {
+  const items: Item[] = [
+    { id: '1', number: 1, difficulty: '쉬움', points: 30, expectedRate: 80 },
+    { id: '2', number: 2, difficulty: '보통', points: 40, expectedRate: 55 },
+    { id: '3', number: 3, difficulty: '어려움', points: 30, expectedRate: 30 },
+  ]; // total 100
+
+  it('미이수기준 equals 40% of total points when includeE미도달 is true', () => {
+    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true, expectedUnmetRate: 5 });
+    expect(output.cutScores.미이수기준).toBe(40);
+  });
+
+  it('미이수기준 is undefined when includeE미도달 is false', () => {
+    const output = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: false });
+    expect(output.cutScores.미이수기준).toBeUndefined();
+  });
+
+  it('미이수기준 scales with total points (90점 만점 → 36)', () => {
+    const items90: Item[] = [{ id: 'a', number: 1, difficulty: '보통', points: 90, expectedRate: 60 }];
+    const output = computeNeisOutput(items90, PRESETS['일반고'], { includeE미도달: true, expectedUnmetRate: 5 });
+    expect(output.cutScores.미이수기준).toBe(36);
+  });
+
+  it('does NOT depend on expectedUnmetRate (unlike the model E/미도달 reference)', () => {
+    const low = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true, expectedUnmetRate: 0 });
+    const high = computeNeisOutput(items, PRESETS['일반고'], { includeE미도달: true, expectedUnmetRate: 10 });
+    expect(low.cutScores.미이수기준).toBe(40);
+    expect(high.cutScores.미이수기준).toBe(40);
+  });
+
+  it('warns MINSTD_ABOVE_DE when 40% line exceeds the D/E cut (very hard exam)', () => {
+    const hard: Item[] = [
+      { id: '1', number: 1, difficulty: '어려움', points: 50, expectedRate: 15 },
+      { id: '2', number: 2, difficulty: '어려움', points: 50, expectedRate: 10 },
+    ];
+    const output = computeNeisOutput(hard, PRESETS['일반고'], { includeE미도달: true, expectedUnmetRate: 5 });
+    expect(output.cutScores.미이수기준).toBe(40);
+    expect(output.cutScores.DE).toBeLessThan(40);
+    expect(output.warnings.some(w => w.code === 'MINSTD_ABOVE_DE')).toBe(true);
+  });
+
+  it('does NOT warn MINSTD_ABOVE_DE for an easy exam where D/E >= 40', () => {
+    const easy: Item[] = [
+      { id: '1', number: 1, difficulty: '쉬움', points: 50, expectedRate: 95 },
+      { id: '2', number: 2, difficulty: '쉬움', points: 50, expectedRate: 92 },
+    ];
+    const output = computeNeisOutput(easy, PRESETS['일반고'], { includeE미도달: true, expectedUnmetRate: 5 });
+    expect(output.warnings.some(w => w.code === 'MINSTD_ABOVE_DE')).toBe(false);
+  });
+});

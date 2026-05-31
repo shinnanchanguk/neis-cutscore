@@ -125,4 +125,30 @@ describe('solveReverse', () => {
       expect(hardCell).toBeDefined();
     }
   });
+
+  it('exposes 미이수기준 as 40% of total points', () => {
+    const result = solveReverse({
+      categoryPoints: { '쉬움': 30, '보통': 40, '어려움': 30 },
+      desiredCutScores: { A: 80, B: 65, C: 50, D: 35, E: 20 },
+    });
+    expect(result.미이수기준).toBe(40);
+  });
+
+  it('returns 미이수기준 0 for zero total points', () => {
+    const result = solveReverse({
+      categoryPoints: { '쉬움': 0, '보통': 0, '어려움': 0 },
+      desiredCutScores: { A: 75, B: 58, C: 41, D: 27, E: 11 },
+    });
+    expect(result.미이수기준).toBe(0);
+  });
+
+  it('warns MINSTD_ABOVE_DE when 40% line exceeds the D/E cut', () => {
+    const result = solveReverse({
+      categoryPoints: { '쉬움': 30, '보통': 40, '어려움': 30 },
+      desiredCutScores: { A: 60, B: 45, C: 30, D: 20, E: 10 },
+    });
+    expect(result.미이수기준).toBe(40);
+    expect(result.actualCutScores['D']).toBeLessThan(40);
+    expect(result.warnings.some((w) => w.code === 'MINSTD_ABOVE_DE')).toBe(true);
+  });
 });

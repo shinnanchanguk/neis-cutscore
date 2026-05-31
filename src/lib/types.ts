@@ -41,9 +41,18 @@ export interface NeisOutput {
   cells: NeisCell[];
   cutScores: {
     AB: number; BC: number; CD: number; DE: number;
-    E미도달?: number;
+    E미도달?: number;      // 모델 추정 E/미도달 경계 (참고값)
+    미이수기준?: number;   // 최소성취수준 고정 기준 = 총점 × 40%
   };
   warnings: Warning[];
+}
+
+/** 최소성취수준(미이수/미도달) 고정 기준 비율: 성취율 40% */
+export const MIN_STANDARD_RATE = 0.4;
+
+/** 총점 대비 미이수(미도달) 고정 분할점수 = 총점 × 40%, 소수 1자리 */
+export function minStandardCut(totalPoints: number): number {
+  return Math.round(totalPoints * MIN_STANDARD_RATE * 10) / 10;
 }
 
 export interface Warning {

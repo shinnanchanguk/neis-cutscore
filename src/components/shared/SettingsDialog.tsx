@@ -117,7 +117,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               </button>
             </div>
             <div style={helperTextStyle}>
-              "5수준+미도달" 선택 시 목표 등급 비율 아래에 예상 미도달 비율 입력이 함께 보입니다. E/미도달 경계와 E열은 그 값을 반영해 계산됩니다.
+              "5수준+미도달" 선택 시 목표 등급 비율 아래에 예상 미도달 비율 입력이 함께 보입니다. 이 값은 NEIS 표의 E열 모양에만 반영되며, 미도달(미이수) 분할점수는 최소성취수준(총점의 40%) 고정 기준으로 표시됩니다.
             </div>
           </div>
 
