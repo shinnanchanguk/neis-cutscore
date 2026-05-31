@@ -9,6 +9,7 @@ interface ExamSettings {
   darkMode: 'system' | 'light' | 'dark';
   onboardingCompleted: boolean;
   mode: 'detail' | 'simple';
+  modeHintSeen: boolean;
 }
 
 interface ExamState {
@@ -63,6 +64,7 @@ const DEFAULT_SETTINGS: ExamSettings = {
   darkMode: 'light',
   onboardingCompleted: false,
   mode: 'simple',
+  modeHintSeen: false,
 };
 
 const DEFAULT_PRESET: PresetName = '일반고';

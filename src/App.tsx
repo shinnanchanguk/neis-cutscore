@@ -40,6 +40,9 @@ function AppHeader() {
   const isTauri = useIsTauri();
   const mode = useExamStore((s) => s.settings.mode);
   const setSetting = useExamStore((s) => s.setSetting);
+  const modeHintSeen = useExamStore((s) => s.settings.modeHintSeen);
+  const onboardingCompleted = useExamStore((s) => s.settings.onboardingCompleted);
+  const showModeHint = onboardingCompleted && !modeHintSeen;
   const [helpOpen, setHelpOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [downloadOpen, setDownloadOpen] = useState(false);
@@ -57,15 +60,70 @@ function AppHeader() {
         flexWrap: 'wrap',
       } as React.CSSProperties}>
         <h1 style={{ ...designStyles.appHeaderH1, flexShrink: 0 } as React.CSSProperties}>추정 분할 점수 계산기</h1>
-        <div style={{ display: 'flex', flexShrink: 0, gap: '4px', background: 'var(--design-border)', padding: '3px', borderRadius: '5px' }}>
-          <button
-            style={modeTabStyle(mode === 'detail', 'detail')}
-            onClick={() => setSetting('mode', 'detail')}
-          >상세</button>
-          <button
-            style={modeTabStyle(mode === 'simple', 'simple')}
-            onClick={() => setSetting('mode', 'simple')}
-          >간편</button>
+        <div style={{ position: 'relative', flexShrink: 0 } as React.CSSProperties}>
+          <div style={{ display: 'flex', gap: '4px', background: 'var(--design-border)', padding: '3px', borderRadius: '5px' }}>
+            <button
+              style={{
+                ...modeTabStyle(mode === 'detail', 'detail'),
+                ...(showModeHint ? { boxShadow: '0 0 0 2px #2563EB, 0 0 0 5px rgba(37,99,235,0.30)' } : null),
+              } as React.CSSProperties}
+              onClick={() => { setSetting('mode', 'detail'); setSetting('modeHintSeen', true); }}
+            >상세</button>
+            <button
+              style={modeTabStyle(mode === 'simple', 'simple')}
+              onClick={() => { setSetting('mode', 'simple'); setSetting('modeHintSeen', true); }}
+            >간편</button>
+          </div>
+          {showModeHint && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 10px)',
+                left: 0,
+                zIndex: 50,
+                width: '250px',
+                maxWidth: '70vw',
+                background: '#1A1A1A',
+                color: '#fff',
+                padding: '11px 13px',
+                borderRadius: '6px',
+                boxShadow: '0 8px 28px rgba(0,0,0,0.28)',
+                fontSize: '12px',
+                lineHeight: 1.55,
+                fontFamily: designStyles.root.fontFamily as string,
+              } as React.CSSProperties}
+            >
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  left: '26px',
+                  width: '10px',
+                  height: '10px',
+                  background: '#1A1A1A',
+                  transform: 'rotate(45deg)',
+                } as React.CSSProperties}
+              />
+              <div style={{ marginBottom: '9px' }}>
+                지금은 <strong>간편 모드</strong>예요. 문항별 예상 정답률을 직접 넣어 <strong>더 세밀하게 조정</strong>하려면 위 <strong>‘상세’</strong>를 눌러보세요.
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' } as React.CSSProperties}>
+                <button
+                  onClick={() => setSetting('modeHintSeen', true)}
+                  style={{
+                    background: '#fff',
+                    color: '#1A1A1A',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '4px 12px',
+                    fontSize: '11px',
+                    cursor: 'pointer',
+                    fontFamily: designStyles.root.fontFamily as string,
+                  } as React.CSSProperties}
+                >알겠어요</button>
+              </div>
+            </div>
+          )}
         </div>
         <span
           role="link"
