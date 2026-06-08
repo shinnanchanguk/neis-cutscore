@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ExamMeta, ExamProject, Grade, Item, PresetName, TargetDistribution } from '@/lib/types';
+import type { ExamMeta, ExamProject, Grade, Item, ItemType, PresetName, TargetDistribution } from '@/lib/types';
 import { DEFAULT_EXPECTED_UNMET_RATE, PRESETS } from '@/lib/presets';
 
 interface ExamSettings {
@@ -10,6 +10,8 @@ interface ExamSettings {
   onboardingCompleted: boolean;
   mode: 'detail' | 'simple';
   modeHintSeen: boolean;
+  /** 선택형·서답형 분리 산출 모드 (기본 false) */
+  splitByType: boolean;
 }
 
 interface ExamState {
@@ -24,8 +26,8 @@ interface ExamState {
   setMeta: (patch: Partial<ExamMeta>) => void;
   setPreset: (name: PresetName) => void;
   setTargetField: (grade: Grade, value: number) => void;
-  addItem: () => void;
-  addBulkItems: (count: number) => void;
+  addItem: (type?: ItemType) => void;
+  addBulkItems: (count: number, type?: ItemType) => void;
   updateItem: (id: string, patch: Partial<Item>) => void;
   removeItem: (id: string) => void;
   duplicateItem: (id: string) => void;
@@ -43,11 +45,12 @@ function renumber(items: Item[]): Item[] {
   return items.map((item, index) => ({ ...item, number: index + 1 }));
 }
 
-function createDefaultItem(): Omit<Item, 'id' | 'number'> {
+function createDefaultItem(type: ItemType = '선택형'): Omit<Item, 'id' | 'number'> {
   return {
     difficulty: '보통',
     points: 4,
     expectedRate: 60,
+    type,
   };
 }
 
@@ -65,6 +68,7 @@ const DEFAULT_SETTINGS: ExamSettings = {
   onboardingCompleted: false,
   mode: 'simple',
   modeHintSeen: false,
+  splitByType: false,
 };
 
 const DEFAULT_PRESET: PresetName = '일반고';
@@ -97,23 +101,23 @@ export const useExamStore = create<ExamState>()(
         }));
       },
 
-      addItem: () => {
+      addItem: (type) => {
         set((state) => {
           const newItem: Item = {
             id: crypto.randomUUID(),
             number: state.items.length + 1,
-            ...createDefaultItem(),
+            ...createDefaultItem(type),
           };
           return { items: [...state.items, newItem] };
         });
       },
 
-      addBulkItems: (count) => {
+      addBulkItems: (count, type) => {
         set((state) => {
           const newItems: Item[] = Array.from({ length: count }, (_, i) => ({
             id: crypto.randomUUID(),
             number: state.items.length + i + 1,
-            ...createDefaultItem(),
+            ...createDefaultItem(type),
           }));
           return { items: [...state.items, ...newItems] };
         });
@@ -184,6 +188,7 @@ export const useExamStore = create<ExamState>()(
             ...DEFAULT_SETTINGS,
             includeE미도달: project.settings.includeE미도달,
             expectedUnmetRate: project.settings.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE,
+            splitByType: project.settings.splitByType ?? false,
           },
           presetName: '사용자정의',
           currentFilePath: null,
@@ -200,6 +205,7 @@ export const useExamStore = create<ExamState>()(
           settings: {
             includeE미도달: state.settings.includeE미도달,
             expectedUnmetRate: state.settings.expectedUnmetRate ?? DEFAULT_EXPECTED_UNMET_RATE,
+            splitByType: state.settings.splitByType,
           },
           createdAt: now,
           updatedAt: now,

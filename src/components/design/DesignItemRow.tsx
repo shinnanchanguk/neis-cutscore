@@ -6,6 +6,7 @@ interface DesignItemRowItem {
   difficulty: string;
   score: number;
   correctRate: number;
+  type?: string;
 }
 
 interface DesignItemRowProps {
@@ -13,19 +14,38 @@ interface DesignItemRowProps {
   onUpdate: (field: string, value: string | number) => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  /** 유형(선택형/서답형) 컬럼 표시 여부 */
+  showType?: boolean;
+  onChangeType?: (type: string) => void;
 }
 
-export function DesignItemRow({ item, onUpdate, onDelete, onDuplicate }: DesignItemRowProps) {
+const ROW_GRID_SPLIT = '36px 76px 90px 56px 1fr 56px';
+
+export function DesignItemRow({ item, onUpdate, onDelete, onDuplicate, showType, onChangeType }: DesignItemRowProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
       data-item="row"
-      style={{ ...designStyles.itemRow, borderBottomColor: hovered ? 'var(--design-border)' : 'transparent' } as React.CSSProperties}
+      style={{
+        ...designStyles.itemRow,
+        ...(showType ? { gridTemplateColumns: ROW_GRID_SPLIT } : null),
+        borderBottomColor: hovered ? 'var(--design-border)' : 'transparent',
+      } as React.CSSProperties}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <div style={designStyles.cellId as React.CSSProperties}>{item.id}</div>
+      {showType && (
+        <select
+          style={{ ...designStyles.select, padding: '6px 8px', fontSize: '11px' } as React.CSSProperties}
+          value={item.type ?? '선택형'}
+          onChange={(e) => onChangeType?.(e.target.value)}
+        >
+          <option>선택형</option>
+          <option>서답형</option>
+        </select>
+      )}
       <select
         style={{ ...designStyles.select, padding: '6px 8px', fontSize: '11px' } as React.CSSProperties}
         value={item.difficulty}

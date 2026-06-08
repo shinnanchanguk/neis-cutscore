@@ -1,5 +1,6 @@
 import type {
   Item,
+  ItemType,
   TargetDistribution,
   Difficulty,
   Grade,
@@ -167,6 +168,71 @@ export function computeNeisOutput(
     cutScores,
     warnings,
   };
+}
+
+/** 선택형·서답형 영역별 NEIS 산출 결과 + 합산 분할점수 */
+export interface SectionedNeisOutput {
+  선택형: NeisOutput | null;
+  서답형: NeisOutput | null;
+  combinedCutScores: {
+    AB: number;
+    BC: number;
+    CD: number;
+    DE: number;
+    E미도달?: number;
+    미이수기준?: number;
+  };
+}
+
+/** 분리 OFF 문항(type 미지정)은 선택형으로 간주 */
+function itemSectionOf(item: Item): ItemType {
+  return item.type === '서답형' ? '서답형' : '선택형';
+}
+
+/**
+ * 선택형·서답형을 각각 독립 산출하고 분할점수를 합산한다.
+ * 각 영역은 동일한 목표 분포(target)·옵션으로 computeNeisOutput을 따로 호출하며,
+ * 총 분할점수 = 선택형컷 + 서답형컷. 미도달(미이수)은 전체 총점 × 40% 단일 기준.
+ */
+export function computeSectionedNeisOutput(
+  items: Item[],
+  target: TargetDistribution,
+  options: ComputeOptions = {}
+): SectionedNeisOutput {
+  const includeE미도달 = options.includeE미도달 ?? true;
+
+  const 선택형Items = items.filter(i => itemSectionOf(i) === '선택형');
+  const 서답형Items = items.filter(i => itemSectionOf(i) === '서답형');
+
+  const 선택형 = 선택형Items.length > 0
+    ? computeNeisOutput(선택형Items, target, options)
+    : null;
+  const 서답형 = 서답형Items.length > 0
+    ? computeNeisOutput(서답형Items, target, options)
+    : null;
+
+  const sumBoundary = (key: 'AB' | 'BC' | 'CD' | 'DE'): number => {
+    const a = 선택형?.cutScores[key] ?? 0;
+    const b = 서답형?.cutScores[key] ?? 0;
+    return Math.round((a + b) * 10) / 10;
+  };
+
+  const combinedCutScores: SectionedNeisOutput['combinedCutScores'] = {
+    AB: sumBoundary('AB'),
+    BC: sumBoundary('BC'),
+    CD: sumBoundary('CD'),
+    DE: sumBoundary('DE'),
+  };
+
+  if (includeE미도달) {
+    const eA = 선택형?.cutScores.E미도달 ?? 0;
+    const eB = 서답형?.cutScores.E미도달 ?? 0;
+    combinedCutScores.E미도달 = Math.round((eA + eB) * 10) / 10;
+    const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+    combinedCutScores.미이수기준 = minStandardCut(totalPoints);
+  }
+
+  return { 선택형, 서답형, combinedCutScores };
 }
 
 /**

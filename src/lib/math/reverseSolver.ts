@@ -146,3 +146,50 @@ export function solveReverse(input: ReverseSolverInput): ReverseSolverOutput {
 
   return { cells, actualCutScores, deltas, 미이수기준, warnings };
 }
+
+/** 선택형·서답형 역산 결과를 합산한 분리 모드 출력 */
+export interface CombinedReverseOutput {
+  선택형: ReverseSolverOutput;
+  서답형: ReverseSolverOutput;
+  combinedActualCutScores: Record<Grade, number>;
+  combinedDeltas: Record<Grade, number>;
+  미이수기준: number; // 전체 총점 × 40%
+  warnings: Warning[];
+}
+
+/**
+ * 두 영역의 solveReverse 결과를 합산한다.
+ * 총 실제컷 = 선택형컷 + 서답형컷, 총 delta = 선택형delta + 서답형delta.
+ * 미이수기준은 전체 총점 × 40% 단일 기준.
+ */
+export function combineReverseOutputs(
+  선택형: ReverseSolverOutput,
+  서답형: ReverseSolverOutput,
+  totalPoints: number
+): CombinedReverseOutput {
+  const combinedActualCutScores = {} as Record<Grade, number>;
+  const combinedDeltas = {} as Record<Grade, number>;
+
+  for (const grade of GRADES) {
+    combinedActualCutScores[grade] = Math.round(
+      (선택형.actualCutScores[grade] + 서답형.actualCutScores[grade]) * 10
+    ) / 10;
+    combinedDeltas[grade] = Math.round(
+      (선택형.deltas[grade] + 서답형.deltas[grade]) * 10
+    ) / 10;
+  }
+
+  const warnings: Warning[] = [
+    ...선택형.warnings.map((w) => ({ ...w, message: `[선택형] ${w.message}` })),
+    ...서답형.warnings.map((w) => ({ ...w, message: `[서답형] ${w.message}` })),
+  ];
+
+  return {
+    선택형,
+    서답형,
+    combinedActualCutScores,
+    combinedDeltas,
+    미이수기준: minStandardCut(totalPoints),
+    warnings,
+  };
+}

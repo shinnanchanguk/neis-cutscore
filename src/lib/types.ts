@@ -2,12 +2,19 @@ export type Difficulty = '쉬움' | '보통' | '어려움';
 export type Grade = 'A' | 'B' | 'C' | 'D' | 'E';
 export type PresetName = '일반고' | '과고_특목고' | '사용자정의';
 
+/** 지필평가 문항 영역: 선택형(객관식) / 서답형(서술·단답) */
+export type ItemType = '선택형' | '서답형';
+
+export const ITEM_TYPES: ItemType[] = ['선택형', '서답형'];
+
 export interface Item {
   id: string;
   number: number;
   difficulty: Difficulty;
   points: number;
   expectedRate: number; // 0~100
+  /** 선택형·서답형 분리 산출 시 영역. 분리 OFF면 무시(미지정은 선택형으로 간주). */
+  type?: ItemType;
 }
 
 export interface TargetDistribution {
@@ -68,6 +75,8 @@ export interface ExamProject {
   settings: {
     includeE미도달: boolean;
     expectedUnmetRate?: number;
+    /** 선택형·서답형 분리 산출 모드 (기본 false) */
+    splitByType?: boolean;
   };
   createdAt: string;
   updatedAt: string;
