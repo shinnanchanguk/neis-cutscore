@@ -142,9 +142,9 @@ function AppHeader() {
           onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
           onClick={() => {
             if (isTauri) {
-              import('@tauri-apps/plugin-shell').then(m => m.open('https://dorm.dev')).catch(() => {});
+              import('@tauri-apps/plugin-shell').then(m => m.open('https://dorms.school/links')).catch(() => {});
             } else {
-              window.open('https://dorm.dev', '_blank');
+              window.open('https://dorms.school/links', '_blank');
             }
           }}
         >Made by DoRm</span>
